@@ -138,6 +138,7 @@
 
       footer {
         display: flex;
+        align-items: center;
         justify-content: space-between;
         gap: 24px;
         color: var(--muted);
@@ -163,6 +164,34 @@
       a:focus-visible {
         outline: 2px solid var(--text);
         outline-offset: 4px;
+      }
+
+      .social {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .social a {
+        display: inline-flex;
+        width: 22px;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+      }
+
+      .social a:hover,
+      .social a:focus-visible {
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .social svg {
+        display: block;
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
       }
 
       @media (max-width: 640px) {
@@ -191,11 +220,7 @@
         }
 
         footer {
-          display: block;
-        }
-
-        footer p + p {
-          margin-top: 10px;
+          display: flex;
         }
       }
     </style>
@@ -222,6 +247,23 @@
 
       <footer>
         <p>Coming soon.</p>
+        <nav class="social" aria-label="Social links">
+          <a href="https://x.com/thinkwithalma" aria-label="Alma on X">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/>
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/thinkwithalma" aria-label="Alma on Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.75 3.75 0 0 0 4 7.75v8.5A3.75 3.75 0 0 0 7.75 20h8.5A3.75 3.75 0 0 0 20 16.25v-8.5A3.75 3.75 0 0 0 16.25 4h-8.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2A2.75 2.75 0 1 0 12 14.75 2.75 2.75 0 0 0 12 9.25Zm5.1-2.6a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/>
+            </svg>
+          </a>
+          <a href="https://www.linkedin.com/in/tryalmanac" aria-label="Alma on LinkedIn">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4.98 3.5A2.5 2.5 0 1 1 4.98 8.5a2.5 2.5 0 0 1 0-5ZM3 21h4V9.75H3V21Zm6.25-11.25H13v1.54h.05c.52-.99 1.8-2.04 3.7-2.04 3.96 0 4.69 2.61 4.69 6V21h-4v-5.1c0-1.22-.02-2.78-1.69-2.78-1.7 0-1.96 1.33-1.96 2.69V21h-4V9.75Z"/>
+            </svg>
+          </a>
+        </nav>
       </footer>
     </div>
   </body>
