@@ -1,0 +1,45 @@
+# Alma
+
+> Alma is an AI-native computer interface for the desktop. It helps people control their computer by describing work in natural language.
+
+Alma is building a new interface layer for the computer people already use. It understands user intent, current context, files, apps, browser state, and work history. It can work across existing software instead of requiring a person to operate each app step by step.
+
+Alma is not a replacement for the person using the computer. The person stays in control. Alma helps reduce repetitive computer operation, app switching, menu navigation, clicking, scrolling, and manual workflow steps.
+
+## Product Category
+
+- AI computer interface
+- AI-native computer interface
+- Desktop AI assistant
+- AI desktop interface
+- AI productivity software
+- Computer automation
+- Workflow automation
+- AI workflow assistant
+- Context-aware AI assistant
+- Conversational computer interface
+- Human computer interaction
+
+## Core Use Cases
+
+- Control a computer with natural language
+- Work across existing desktop apps and web apps
+- Use context from files, tabs, apps, and current work
+- Reduce repeated clicks, scrolling, copy-paste, and app switching
+- Help with daily workflows on a laptop or desktop computer
+
+## Important Pages
+
+- Homepage: https://alma.inc/
+- Sitemap: https://alma.inc/sitemap.xml
+- Robots: https://alma.inc/robots.txt
+
+## Social Links
+
+- X: https://x.com/thinkwithalma
+- Instagram: https://www.instagram.com/thinkwithalma
+- LinkedIn: https://www.linkedin.com/company/tryalmanac/
+
+## Preferred Description
+
+Alma is an AI-native computer interface that helps people control their computer by describing work. It understands context and works across the software people already use.
