@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Get on the Alma waitlist. Alma is an AI computer interface for natural language control across desktop apps and web apps.">
+    <meta name="description" content="Join the Alma waitlist. Alma is an AI-native computer interface that helps people control their computer by describing work.">
     <meta name="robots" content="noindex,follow">
-    <link rel="canonical" href="https://alma.inc/v3/">
+    <link rel="canonical" href="https://alma.inc/v1/">
     <link rel="icon" href="/almanac_logo.jpg" type="image/jpeg">
     <link rel="apple-touch-icon" href="/almanac_logo.jpg">
-    <title>Alma - Request access</title>
+    <title>Alma - Waitlist</title>
 
     <style>
       :root {
         color-scheme: light;
         --text: #000;
         --muted: #5f5f5f;
-        --rule: #d8d8d8;
+        --rule: #ededed;
         --page: #fff;
       }
 
@@ -59,34 +59,38 @@
 
       main {
         align-self: center;
-        width: min(100%, 820px);
+        width: min(100%, 760px);
         padding: clamp(28px, 6vh, 64px) 0;
       }
 
       .statement {
-        margin: 0 0 clamp(24px, 4vh, 38px);
-        max-width: 800px;
+        margin: 0 0 clamp(22px, 4vh, 36px);
+        max-width: 740px;
         font-size: clamp(2rem, 4.4vw, 3.75rem);
         font-weight: 520;
         line-height: 1.04;
         letter-spacing: 0;
       }
 
-      .sentence-form {
-        max-width: 780px;
+      .copy {
+        max-width: 650px;
         color: #171717;
-        font-size: clamp(1.08rem, 1.6vw, 1.45rem);
-        line-height: 1.55;
+        font-size: clamp(0.98rem, 1.1vw, 1.08rem);
+        line-height: 1.48;
       }
 
-      .sentence-form p {
-        margin: 0 0 clamp(20px, 3vh, 28px);
+      .copy p {
+        margin: 0;
+      }
+
+      .copy p + p {
+        margin-top: 0.62em;
       }
 
       .waitlist {
         display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
+        width: min(100%, 500px);
+        margin-top: clamp(24px, 4vh, 36px);
         gap: 10px;
       }
 
@@ -99,10 +103,11 @@
       }
 
       input {
-        width: min(100%, 300px);
+        width: 100%;
+        min-width: 0;
         border: 0;
         border-bottom: 1px solid var(--text);
-        padding: 6px 0 7px;
+        padding: 14px 0;
         color: var(--text);
         background: transparent;
         font: inherit;
@@ -114,19 +119,20 @@
       }
 
       button {
-        border: 0;
-        border-bottom: 1px solid var(--text);
-        padding: 6px 0 7px;
-        color: var(--text);
-        background: transparent;
+        border: 1px solid var(--text);
+        padding: 12px 18px;
+        color: var(--page);
+        background: var(--text);
         font: inherit;
         font-weight: 500;
+        white-space: nowrap;
         cursor: pointer;
       }
 
       button:hover,
       button:focus-visible {
-        color: var(--muted);
+        color: var(--text);
+        background: var(--page);
       }
 
       footer {
@@ -206,23 +212,13 @@
           margin-bottom: 22px;
         }
 
-        .sentence-form {
-          font-size: 1rem;
-          line-height: 1.42;
+        .copy {
+          font-size: 0.94rem;
+          line-height: 1.4;
         }
 
         .waitlist {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 12px;
-        }
-
-        input {
-          width: 100%;
-        }
-
-        button {
-          width: max-content;
+          margin-top: 24px;
         }
       }
     </style>
@@ -234,19 +230,22 @@
       </header>
 
       <main>
-        <section aria-label="Alma request access">
+        <section aria-label="Alma waitlist">
           <p class="statement">An AI-native interface for the computer you already use.</p>
 
-          <div class="sentence-form">
-            <p>AI changes the computer interface. Alma helps people start with intent, not apps, windows, menus, and files.</p>
+          <div class="copy">
+            <p>The computer interface has changed little since the GUI made apps, windows, menus, and files the main way to work.</p>
 
-            <form class="waitlist" action="/waitlist" method="post">
-              <span>When Alma opens, tell</span>
-              <label for="email">Email address</label>
-              <input id="email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
-              <button type="submit">first.</button>
-            </form>
+            <p>AI changes what the computer can understand. The interface should change with it. People should start with intent and context, not with the limits of an app.</p>
+
+            <p>Alma is a new interface to the computer. It helps people reclaim the computer they already use, while keeping them in control.</p>
           </div>
+
+          <form class="waitlist" action="/waitlist" method="post">
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" placeholder="Email address" autocomplete="email" required>
+            <button type="submit">Join waitlist</button>
+          </form>
         </section>
       </main>
 

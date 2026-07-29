@@ -3,19 +3,19 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Join the Alma waitlist. Alma is an AI-native computer interface that helps people control their computer by describing work.">
+    <meta name="description" content="Get on the Alma waitlist. Alma is an AI computer interface for natural language control across desktop apps and web apps.">
     <meta name="robots" content="noindex,follow">
-    <link rel="canonical" href="https://alma.inc/v1/">
+    <link rel="canonical" href="https://alma.inc/v3/">
     <link rel="icon" href="/almanac_logo.jpg" type="image/jpeg">
     <link rel="apple-touch-icon" href="/almanac_logo.jpg">
-    <title>Alma - Waitlist</title>
+    <title>Alma - Request access</title>
 
     <style>
       :root {
         color-scheme: light;
         --text: #000;
         --muted: #5f5f5f;
-        --rule: #ededed;
+        --rule: #d8d8d8;
         --page: #fff;
       }
 
@@ -59,13 +59,13 @@
 
       main {
         align-self: center;
-        width: min(100%, 760px);
+        width: min(100%, 820px);
         padding: clamp(28px, 6vh, 64px) 0;
       }
 
       .statement {
-        margin: 0 0 clamp(22px, 4vh, 36px);
-        max-width: 740px;
+        margin: 0 0 clamp(24px, 4vh, 38px);
+        max-width: 800px;
         font-size: clamp(2rem, 4.4vw, 3.75rem);
         font-weight: 520;
         line-height: 1.04;
@@ -91,7 +91,7 @@
         display: flex;
         width: min(100%, 500px);
         margin-top: clamp(24px, 4vh, 36px);
-        border-bottom: 1px solid var(--text);
+        gap: 10px;
       }
 
       label {
@@ -106,6 +106,7 @@
         width: 100%;
         min-width: 0;
         border: 0;
+        border-bottom: 1px solid var(--text);
         padding: 14px 0;
         color: var(--text);
         background: transparent;
@@ -118,10 +119,10 @@
       }
 
       button {
-        border: 0;
-        padding: 14px 0 14px 20px;
-        color: var(--text);
-        background: transparent;
+        border: 1px solid var(--text);
+        padding: 12px 18px;
+        color: var(--page);
+        background: var(--text);
         font: inherit;
         font-weight: 500;
         white-space: nowrap;
@@ -130,8 +131,8 @@
 
       button:hover,
       button:focus-visible {
-        text-decoration: underline;
-        text-underline-offset: 0.18em;
+        color: var(--text);
+        background: var(--page);
       }
 
       footer {
@@ -229,12 +230,15 @@
       </header>
 
       <main>
-        <section aria-label="Alma waitlist">
+        <section aria-label="Alma request access">
           <p class="statement">An AI-native interface for the computer you already use.</p>
 
           <div class="copy">
             <p>The computer interface has changed little since the GUI made apps, windows, menus, and files the main way to work.</p>
-            <p>AI changes what the computer can understand. Alma is a new interface to the computer. It helps people start with intent and stay in control.</p>
+
+            <p>AI changes what the computer can understand. The interface should change with it. People should start with intent and context, not with the limits of an app.</p>
+
+            <p>Alma is a new interface to the computer. It helps people reclaim the computer they already use, while keeping them in control.</p>
           </div>
 
           <form class="waitlist" action="/waitlist" method="post">

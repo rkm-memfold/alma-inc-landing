@@ -1,37 +1,49 @@
 User-agent: GPTBot
 Allow: /
+Disallow: /archive/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /archive/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /archive/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /archive/
 
 User-agent: Claude-SearchBot
 Allow: /
+Disallow: /archive/
 
 User-agent: Claude-User
 Allow: /
+Disallow: /archive/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /archive/
 
 User-agent: Perplexity-User
 Allow: /
+Disallow: /archive/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /archive/
 
 User-agent: Googlebot
 Allow: /
+Disallow: /archive/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /archive/
 
 User-agent: *
 Allow: /
+Disallow: /archive/
 
 Sitemap: https://alma.inc/sitemap.xml

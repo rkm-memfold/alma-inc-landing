@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Alma is an AI computer interface that helps people control their computer by describing work. It understands context and works across existing apps.">
+    <meta name="keywords" content="Alma, AI computer interface, AI-native computer interface, control computer with AI, conversational computer interface, AI desktop assistant, contextual AI, human computer interaction, productivity AI, computer automation">
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="canonical" href="https://alma.inc/">
+
+    <meta property="og:title" content="Alma - Control your computer with AI">
+    <meta property="og:description" content="Alma is an AI computer interface that helps people control their computer by describing work. It understands context and works across existing apps.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alma.inc/">
+    <meta property="og:site_name" content="Alma">
+    <meta property="og:image" content="https://alma.inc/og.png">
+    <meta property="og:image:alt" content="Alma">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Alma - Control your computer with AI">
+    <meta name="twitter:description" content="Alma is an AI computer interface that helps people control their computer by describing work. It understands context and works across existing apps.">
+    <meta name="twitter:image" content="https://alma.inc/og.png">
+    <meta name="twitter:image:alt" content="Alma">
+
+    <link rel="icon" href="/almanac_logo.jpg" type="image/jpeg">
+    <link rel="apple-touch-icon" href="/almanac_logo.jpg">
+
+    <title>Alma - Control your computer with AI</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "name": "Alma",
+            "url": "https://alma.inc",
+            "description": "Alma is an AI computer interface that helps people control their computer by describing work."
+          },
+          {
+            "@type": "WebSite",
+            "name": "Alma",
+            "url": "https://alma.inc",
+            "description": "Alma is an AI computer interface that helps people control their computer by describing work."
+          }
+        ]
+      }
+    </script>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --text: #000;
+        --muted: #5f5f5f;
+        --rule: #ededed;
+        --page: #fff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--page);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100svh;
+        overflow: hidden;
+        background: var(--page);
+      }
+
+      .page {
+        display: grid;
+        min-height: 100svh;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        width: min(100%, 1080px);
+        margin: 0 auto;
+        padding: clamp(28px, 5vh, 48px) clamp(24px, 6vw, 80px);
+      }
+
+      header {
+        padding-top: 0;
+      }
+
+      .brand {
+        margin: 0;
+        font-size: clamp(1.35rem, 2vw, 1.7rem);
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.45;
+      }
+
+      main {
+        align-self: center;
+        width: min(100%, 760px);
+        padding: clamp(32px, 7vh, 72px) 0;
+      }
+
+      .statement {
+        margin: 0 0 clamp(24px, 4vh, 40px);
+        max-width: 740px;
+        font-size: clamp(2rem, 4.4vw, 3.75rem);
+        font-weight: 520;
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .copy {
+        max-width: 660px;
+        color: #171717;
+        font-size: clamp(0.98rem, 1.1vw, 1.08rem);
+        line-height: 1.5;
+      }
+
+      .copy p {
+        margin: 0;
+      }
+
+      .copy p + p {
+        margin-top: 0.68em;
+      }
+
+      footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        text-underline-offset: 0.18em;
+      }
+
+      a:hover,
+      a:focus-visible {
+        color: var(--text);
+        text-decoration: underline;
+      }
+
+      a:focus-visible {
+        outline: 2px solid var(--text);
+        outline-offset: 4px;
+      }
+
+      .social {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .social a {
+        display: inline-flex;
+        width: 22px;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+      }
+
+      .social a:hover,
+      .social a:focus-visible {
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      .social svg {
+        display: block;
+        fill: currentColor;
+      }
+
+      .social-x svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      .social-instagram svg,
+      .social-linkedin svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      @media (max-width: 640px) {
+        .page {
+          padding: 24px;
+        }
+
+        main {
+          align-self: start;
+          padding: clamp(44px, 8vh, 64px) 0 32px;
+        }
+
+        .statement {
+          font-size: clamp(1.8rem, 8vw, 2.65rem);
+          line-height: 1.08;
+          margin-bottom: 24px;
+        }
+
+        .copy {
+          font-size: 0.94rem;
+          line-height: 1.42;
+        }
+
+        .copy p + p {
+          margin-top: 0.58em;
+        }
+
+        footer {
+          display: flex;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header aria-labelledby="site-title">
+        <h1 id="site-title" class="brand">ALMA</h1>
+      </header>
+
+      <main>
+        <section aria-label="Alma overview">
+          <p class="statement">An AI-native interface for the computer you already use.</p>
+
+          <div class="copy">
+            <p>The computer interface has changed little since the GUI made apps, windows, menus, and files the main way to work.</p>
+
+            <p>AI changes what the computer can understand. The interface should change with it. People should start with intent and context, not with the limits of an app.</p>
+
+            <p>Alma is a new interface to the computer. It helps people reclaim the computer they already use, while keeping them in control.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Coming soon.</p>
+        <nav class="social" aria-label="Social links">
+          <a class="social-x" href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on X">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/>
+            </svg>
+          </a>
+          <a class="social-instagram" href="https://www.instagram.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.75 3.75 0 0 0 4 7.75v8.5A3.75 3.75 0 0 0 7.75 20h8.5A3.75 3.75 0 0 0 20 16.25v-8.5A3.75 3.75 0 0 0 16.25 4h-8.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2A2.75 2.75 0 1 0 12 14.75 2.75 2.75 0 0 0 12 9.25Zm5.1-2.6a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/>
+            </svg>
+          </a>
+          <a class="social-linkedin" href="https://www.linkedin.com/company/tryalmanac/" target="_blank" rel="noopener noreferrer" aria-label="Alma on LinkedIn">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4.98 3.5A2.5 2.5 0 1 1 4.98 8.5a2.5 2.5 0 0 1 0-5ZM3 21h4V9.75H3V21Zm6.25-11.25H13v1.54h.05c.52-.99 1.8-2.04 3.7-2.04 3.96 0 4.69 2.61 4.69 6V21h-4v-5.1c0-1.22-.02-2.78-1.69-2.78-1.7 0-1.96 1.33-1.96 2.69V21h-4V9.75Z"/>
+            </svg>
+          </a>
+        </nav>
+      </footer>
+    </div>
+  </body>
+</html>

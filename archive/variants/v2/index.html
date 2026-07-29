@@ -63,12 +63,6 @@
         padding: clamp(28px, 6vh, 64px) 0;
       }
 
-      .kicker {
-        margin: 0 0 18px;
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-
       .statement {
         margin: 0 0 clamp(22px, 4vh, 36px);
         max-width: 760px;
@@ -89,31 +83,31 @@
         margin: 0;
       }
 
-      .waitlist {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        align-items: end;
-        width: min(100%, 540px);
-        margin-top: clamp(24px, 4vh, 36px);
-        gap: 14px;
+      .copy p + p {
+        margin-top: 0.62em;
       }
 
-      .field {
-        border-bottom: 1px solid var(--text);
+      .waitlist {
+        display: flex;
+        width: min(100%, 500px);
+        margin-top: clamp(24px, 4vh, 36px);
+        gap: 10px;
       }
 
       label {
-        display: block;
-        margin-bottom: 8px;
-        color: var(--muted);
-        font-size: 0.8rem;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
       }
 
       input {
         width: 100%;
         min-width: 0;
         border: 0;
-        padding: 8px 0 13px;
+        border-bottom: 1px solid var(--text);
+        padding: 14px 0;
         color: var(--text);
         background: transparent;
         font: inherit;
@@ -125,9 +119,8 @@
       }
 
       button {
-        min-height: 45px;
         border: 1px solid var(--text);
-        padding: 0 18px;
+        padding: 12px 18px;
         color: var(--page);
         background: var(--text);
         font: inherit;
@@ -225,13 +218,7 @@
         }
 
         .waitlist {
-          grid-template-columns: 1fr;
-          gap: 14px;
           margin-top: 24px;
-        }
-
-        button {
-          width: 100%;
         }
       }
     </style>
@@ -244,19 +231,20 @@
 
       <main>
         <section aria-label="Alma early access">
-          <p class="kicker">Early access</p>
-          <p class="statement">Be early to the next computer interface.</p>
+          <p class="statement">An AI-native interface for the computer you already use.</p>
 
           <div class="copy">
-            <p>AI changes how computers can work with people. Alma turns intent and context into the new starting point.</p>
+            <p>The computer interface has changed little since the GUI made apps, windows, menus, and files the main way to work.</p>
+
+            <p>AI changes what the computer can understand. The interface should change with it. People should start with intent and context, not with the limits of an app.</p>
+
+            <p>Alma is a new interface to the computer. It helps people reclaim the computer they already use, while keeping them in control.</p>
           </div>
 
           <form class="waitlist" action="/waitlist" method="post">
-            <div class="field">
-              <label for="email">Enter your email to request a place</label>
-              <input id="email" name="email" type="email" placeholder="you@company.com" autocomplete="email" required>
-            </div>
-            <button type="submit">Save my place</button>
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" placeholder="Email address" autocomplete="email" required>
+            <button type="submit">Join waitlist</button>
           </form>
         </section>
       </main>
