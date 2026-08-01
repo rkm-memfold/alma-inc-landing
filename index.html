@@ -64,6 +64,38 @@
       }
     </script>
 
+    <script>
+      (() => {
+        const projectToken = "phc_BDaCzyN97ofKKMs83n92a7AANzYVwZLfaPVRr5WLMQy7";
+        const apiHost = "https://us.i.posthog.com";
+        const isProduction = ["alma.inc", "www.alma.inc"].includes(window.location.hostname);
+        const isConfigured = projectToken !== "POSTHOG_PROJECT_TOKEN" && apiHost !== "POSTHOG_API_HOST";
+
+        if (!isProduction || !isConfigured) {
+          return;
+        }
+
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog&&window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+
+        posthog.init(projectToken, {
+          api_host: apiHost,
+          defaults: "2026-05-30",
+          person_profiles: "identified_only",
+          cookieless_mode: "always",
+          capture_pageview: true,
+          capture_pageleave: true,
+          capture_dead_clicks: false,
+          disable_session_recording: true,
+          autocapture: {
+            url_allowlist: [/^https:\/\/(www\.)?alma\.inc(?:\/|$)/],
+            dom_event_allowlist: ["click"],
+            element_allowlist: ["a", "button"],
+            css_selector_ignorelist: [".ph-no-autocapture", "[data-ph-no-autocapture]"]
+          }
+        });
+      })();
+    </script>
+
     <style>
       :root {
         color-scheme: light;
@@ -414,7 +446,7 @@
 
           <form class="waitlist" action="/waitlist" method="post">
             <label for="email">Email address</label>
-            <input id="email" name="email" type="email" placeholder="Email address" autocomplete="email" required>
+            <input id="email" class="ph-no-autocapture" name="email" type="email" placeholder="Email address" autocomplete="email" data-ph-no-autocapture required>
             <p class="confirmation" role="status" aria-live="polite">You're on the waitlist.</p>
             <button type="submit">
               <span class="button-label">Join waitlist</span>
@@ -427,13 +459,13 @@
       <footer>
         <p>Coming soon.</p>
         <nav class="social" aria-label="Social links">
-          <a href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on X">
+          <a href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on X" data-platform="x">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/></svg>
           </a>
-          <a href="https://www.instagram.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on Instagram">
+          <a href="https://www.instagram.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on Instagram" data-platform="instagram">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.75 3.75 0 0 0 4 7.75v8.5A3.75 3.75 0 0 0 7.75 20h8.5A3.75 3.75 0 0 0 20 16.25v-8.5A3.75 3.75 0 0 0 16.25 4h-8.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2A2.75 2.75 0 1 0 12 14.75 2.75 2.75 0 0 0 12 9.25Zm5.1-2.6a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/></svg>
           </a>
-          <a href="https://www.linkedin.com/company/tryalmanac/" target="_blank" rel="noopener noreferrer" aria-label="Alma on LinkedIn">
+          <a href="https://www.linkedin.com/company/tryalmanac/" target="_blank" rel="noopener noreferrer" aria-label="Alma on LinkedIn" data-platform="linkedin">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 1 4.98 8.5a2.5 2.5 0 0 1 0-5ZM3 21h4V9.75H3V21Zm6.25-11.25H13v1.54h.05c.52-.99 1.8-2.04 3.7-2.04 3.96 0 4.69 2.61 4.69 6V21h-4v-5.1c0-1.22-.02-2.78-1.69-2.78-1.7 0-1.96 1.33-1.96 2.69V21h-4V9.75Z"/></svg>
           </a>
         </nav>
@@ -445,11 +477,31 @@
       const emailInput = document.querySelector("#email");
       const submitButton = waitlistForm.querySelector("button");
 
+      const captureEvent = (eventName, properties, options) => {
+        if (window.posthog && typeof window.posthog.capture === "function") {
+          window.posthog.capture(eventName, properties, options);
+        }
+      };
+
       waitlistForm.addEventListener("submit", (event) => {
         event.preventDefault();
+        captureEvent("waitlist_form_submitted", {
+          form_id: "homepage_waitlist"
+        });
         emailInput.disabled = true;
         submitButton.disabled = true;
         waitlistForm.classList.add("is-submitted");
+      });
+
+      document.querySelectorAll(".social [data-platform]").forEach((link) => {
+        link.addEventListener("click", () => {
+          captureEvent("social_link_clicked", {
+            platform: link.dataset.platform,
+            location: "footer"
+          }, {
+            transport: "sendBeacon"
+          });
+        });
       });
     </script>
   </body>
