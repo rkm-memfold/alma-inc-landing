@@ -483,6 +483,12 @@
         }
       };
 
+      const socialClickEvents = {
+        x: "social_x_clicked",
+        instagram: "social_instagram_clicked",
+        linkedin: "social_linkedin_clicked"
+      };
+
       waitlistForm.addEventListener("submit", (event) => {
         event.preventDefault();
         captureEvent("waitlist_form_submitted", {
@@ -495,8 +501,7 @@
 
       document.querySelectorAll(".social [data-platform]").forEach((link) => {
         link.addEventListener("click", () => {
-          captureEvent("social_link_clicked", {
-            platform: link.dataset.platform,
+          captureEvent(socialClickEvents[link.dataset.platform], {
             location: "footer"
           }, {
             transport: "sendBeacon"

@@ -14,7 +14,9 @@ store analytics data in cookies, local storage, or session storage.
 - Pageviews and pageleaves on `alma.inc`
 - Clicks on links and buttons
 - `waitlist_form_submitted` without the submitted email address
-- `social_link_clicked` with the platform and footer location
+- `social_x_clicked`
+- `social_instagram_clicked`
+- `social_linkedin_clicked`
 
 The email input is excluded from autocapture. Session replay, dead-click
 capture, input-change autocapture, and person profile creation for anonymous
