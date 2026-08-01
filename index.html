@@ -489,14 +489,32 @@
         linkedin: "social_linkedin_clicked"
       };
 
-      waitlistForm.addEventListener("submit", (event) => {
+      waitlistForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         captureEvent("waitlist_form_submitted", {
           form_id: "homepage_waitlist"
         });
         emailInput.disabled = true;
         submitButton.disabled = true;
-        waitlistForm.classList.add("is-submitted");
+
+        try {
+          const response = await fetch("/waitlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: emailInput.value }),
+          });
+          if (!response.ok) throw new Error("request failed");
+          waitlistForm.classList.add("is-submitted");
+        } catch {
+          captureEvent("waitlist_form_failed", {
+            form_id: "homepage_waitlist"
+          });
+          emailInput.disabled = false;
+          submitButton.disabled = false;
+          emailInput.value = "";
+          emailInput.placeholder = "Something went wrong — try again";
+          emailInput.focus();
+        }
       });
 
       document.querySelectorAll(".social [data-platform]").forEach((link) => {

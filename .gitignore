@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Django
+backend/staticfiles/
+*.sqlite3
+
+# Local env files — real secrets live in /etc/alma-backend.env on the VM
+.env
+*.env
