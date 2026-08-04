@@ -3,11 +3,12 @@
 The production homepage contains the PostHog JavaScript snippet and event
 tracking. The project token and US Cloud ingestion host are configured.
 
-## Project setting
+## Browser storage
 
-Enable **Cookieless server hash mode** under **Project Settings > Web
-analytics**. The site uses `cookieless_mode: "always"`, so PostHog does not
-store analytics data in cookies, local storage, or session storage.
+The site uses `persistence: "memory"`, so PostHog does not store analytics data
+in cookies, local storage, or session storage. Do not enable cookieless server
+hash mode for this site because it strips IP data before PostHog can perform
+GeoIP enrichment.
 
 ## Captured data
 
@@ -18,10 +19,16 @@ store analytics data in cookies, local storage, or session storage.
 - `social_instagram_clicked`
 - `social_linkedin_clicked`
 
-The email input is excluded from autocapture. Session replay, dead-click
-capture, input-change autocapture, and person profile creation for anonymous
-visitors are disabled. Analytics also stays disabled on localhost and other
-non-production hosts.
+The email input is excluded from autocapture and masked in session replay.
+Replay starts for every production session, overriding sampling and trigger
+rules. Dead-click capture, input-change autocapture, and person profile creation
+for anonymous visitors are disabled. Analytics also stays disabled on localhost
+and other non-production hosts.
+
+Country enrichment requires IP data capture in PostHog. Under **Settings >
+Project > Privacy**, keep **Discard client IP data** disabled. PostHog uses the
+address for GeoIP enrichment; geography is only available for new events after
+cookieless server hash mode is removed.
 
 ## Verification
 

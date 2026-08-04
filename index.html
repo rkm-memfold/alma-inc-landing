@@ -81,11 +81,22 @@
           api_host: apiHost,
           defaults: "2026-05-30",
           person_profiles: "identified_only",
-          cookieless_mode: "always",
+          persistence: "memory",
           capture_pageview: true,
           capture_pageleave: true,
           capture_dead_clicks: false,
-          disable_session_recording: true,
+          disable_session_recording: false,
+          session_recording: {
+            maskAllInputs: true
+          },
+          loaded: (posthog) => {
+            posthog.startSessionRecording({
+              sampling: true,
+              linked_flag: true,
+              url_trigger: true,
+              event_trigger: true
+            });
+          },
           autocapture: {
             url_allowlist: [/^https:\/\/(www\.)?alma\.inc(?:\/|$)/],
             dom_event_allowlist: ["click"],
