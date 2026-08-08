@@ -227,11 +227,11 @@
 
       .confirmation {
         display: none;
+        grid-column: 1 / -1;
         min-width: 0;
         min-height: 49px;
         align-items: center;
         border: 1px solid var(--text);
-        border-right: 0;
         padding: 13px 14px;
         margin: 0;
         color: var(--text);
@@ -244,9 +244,15 @@
 
       .waitlist.is-submitted .confirmation {
         display: flex;
+        min-height: 100%;
+        justify-content: center;
         color: var(--page);
         background: var(--text);
         font-weight: 650;
+      }
+
+      .waitlist.is-submitted button {
+        display: none;
       }
 
       input::placeholder {
@@ -277,22 +283,10 @@
         cursor: default;
       }
 
-      .button-confirmation {
-        display: none;
-      }
-
-      .waitlist.is-submitted .button-label {
-        display: none;
-      }
-
-      .waitlist.is-submitted .button-confirmation {
-        display: inline;
-      }
-
       footer {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         padding-top: 22px;
         color: var(--muted);
         font-size: 0.9rem;
@@ -434,9 +428,6 @@
           border-right: 1px solid var(--text);
         }
 
-        .confirmation {
-          border-right: 1px solid var(--text);
-        }
       }
     </style>
   </head>
@@ -458,17 +449,13 @@
           <form class="waitlist" action="/waitlist" method="post">
             <label for="email">Email address</label>
             <input id="email" class="ph-no-autocapture" name="email" type="email" placeholder="Email address" autocomplete="email" data-ph-no-autocapture required>
-            <p class="confirmation" role="status" aria-live="polite">You're on the waitlist.</p>
-            <button type="submit">
-              <span class="button-label">Join waitlist</span>
-              <span class="button-confirmation">Confirmed</span>
-            </button>
+            <p class="confirmation" role="status" aria-live="polite">You're on the waitlist</p>
+            <button type="submit">Continue</button>
           </form>
         </section>
       </main>
 
       <footer>
-        <p>Coming soon.</p>
         <nav class="social" aria-label="Social links">
           <a href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on X" data-platform="x">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/></svg>
@@ -502,6 +489,7 @@
 
       waitlistForm.addEventListener("submit", async (event) => {
         event.preventDefault();
+        waitlistForm.style.minHeight = `${waitlistForm.offsetHeight}px`;
         captureEvent("waitlist_form_submitted", {
           form_id: "homepage_waitlist"
         });
@@ -522,6 +510,7 @@
           });
           emailInput.disabled = false;
           submitButton.disabled = false;
+          waitlistForm.style.minHeight = "";
           emailInput.value = "";
           emailInput.placeholder = "Something went wrong — try again";
           emailInput.focus();
