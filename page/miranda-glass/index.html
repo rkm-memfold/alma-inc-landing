@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
     <meta name="robots" content="noindex,nofollow">
     <meta name="theme-color" content="#f5f5fa">
     <title>Alma - The AI-native interface to your computer</title>
@@ -342,8 +342,8 @@
 
         .intro {
           margin-top: 22px;
-          font-size: 15px;
-          line-height: 1.42;
+          font-size: 16px;
+          line-height: 1.44;
         }
 
         .waitlist {
@@ -364,9 +364,9 @@
         }
 
         .social {
-          bottom: 24px;
-          gap: 9px;
-          font-size: 10px;
+          bottom: 30px;
+          gap: 11px;
+          font-size: 12px;
         }
       }
 
@@ -429,8 +429,8 @@
 
         .intro {
           margin-top: 14px;
-          font-size: 12.5px;
-          line-height: 1.32;
+          font-size: 14px;
+          line-height: 1.36;
         }
 
         .waitlist {
@@ -447,17 +447,39 @@
         }
 
         .waitlist input {
-          padding: 0 14px;
+          padding: 0 10px;
+          font-size: 16px;
         }
 
         .waitlist button {
-          padding: 0 14px;
+          padding: 0 12px;
+          font-size: 14px;
         }
 
         .social {
-          bottom: 12px;
-          gap: 7px;
-          font-size: 8.5px;
+          bottom: 22px;
+          gap: 9px;
+          font-size: 11px;
+        }
+      }
+
+      @media (max-width: 340px) {
+        .waitlist {
+          gap: 6px;
+        }
+
+        .waitlist input {
+          padding-right: 6px;
+          padding-left: 6px;
+        }
+
+        .waitlist input::placeholder {
+          font-size: 15px;
+        }
+
+        .waitlist button {
+          padding-right: 8px;
+          padding-left: 8px;
         }
       }
 
@@ -498,7 +520,7 @@
 
         <form class="waitlist" action="/waitlist" method="post">
           <label class="sr-only" for="page-email">Email address</label>
-          <input id="page-email" class="ph-no-autocapture" name="email" type="email" placeholder="Enter email address" autocomplete="email" data-ph-no-autocapture required>
+          <input id="page-email" class="ph-no-autocapture" name="email" type="email" inputmode="email" enterkeyhint="go" placeholder="Enter email address" autocomplete="email" data-ph-no-autocapture required>
           <button type="submit" disabled>Continue</button>
           <p class="confirmation" role="status" aria-live="polite">You're on the waitlist</p>
         </form>
@@ -523,6 +545,12 @@
       };
 
       email.addEventListener("input", syncButtonState);
+      email.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !button.disabled) {
+          event.preventDefault();
+          form.requestSubmit();
+        }
+      });
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
