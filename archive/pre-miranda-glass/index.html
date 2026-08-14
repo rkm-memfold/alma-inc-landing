@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Alma is an AI-native computer interface that helps people control their computer with AI, understand context, and work across existing apps.">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="canonical" href="https://alma.inc/">
+
+    <meta property="og:title" content="Alma - The AI-native interface to your computer">
+    <meta property="og:description" content="Alma is an AI-native computer interface that helps people control their computer with AI, understand context, and work across existing apps.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://alma.inc/">
+    <meta property="og:site_name" content="Alma">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://alma.inc/og.png">
+    <meta property="og:image:secure_url" content="https://alma.inc/og.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Alma, an AI-native computer interface">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@thinkwithalma">
+    <meta name="twitter:title" content="Alma - The AI-native interface to your computer">
+    <meta name="twitter:description" content="Alma is an AI-native computer interface that helps people control their computer with AI, understand context, and work across existing apps.">
+    <meta name="twitter:image" content="https://alma.inc/og.png">
+    <meta name="twitter:image:alt" content="Alma, an AI-native computer interface">
+
+    <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/client-logomark-dark.png">
+    <title>Alma - The AI-native interface to your computer</title>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://alma.inc/#organization",
+            "name": "Alma",
+            "url": "https://alma.inc/",
+            "logo": "https://alma.inc/client-logomark-dark.svg",
+            "description": "Alma is an AI-native computer interface that helps people control their computer by describing work.",
+            "sameAs": [
+              "https://x.com/thinkwithalma",
+              "https://www.instagram.com/thinkwithalma",
+              "https://www.linkedin.com/company/tryalmanac/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://alma.inc/#website",
+            "name": "Alma",
+            "url": "https://alma.inc/",
+            "description": "Alma is an AI-native computer interface for the computer people already use.",
+            "publisher": {
+              "@id": "https://alma.inc/#organization"
+            },
+            "inLanguage": "en"
+          }
+        ]
+      }
+    </script>
+
+    <script>
+      (() => {
+        const projectToken = "phc_BDaCzyN97ofKKMs83n92a7AANzYVwZLfaPVRr5WLMQy7";
+        const apiHost = "https://us.i.posthog.com";
+        const isProduction = ["alma.inc", "www.alma.inc"].includes(window.location.hostname);
+        const isConfigured = projectToken !== "POSTHOG_PROJECT_TOKEN" && apiHost !== "POSTHOG_API_HOST";
+
+        if (!isProduction || !isConfigured) {
+          return;
+        }
+
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog&&window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+
+        posthog.init(projectToken, {
+          api_host: apiHost,
+          defaults: "2026-05-30",
+          person_profiles: "identified_only",
+          persistence: "memory",
+          capture_pageview: true,
+          capture_pageleave: true,
+          capture_dead_clicks: false,
+          disable_session_recording: false,
+          session_recording: {
+            maskAllInputs: true
+          },
+          loaded: (posthog) => {
+            posthog.startSessionRecording({
+              sampling: true,
+              linked_flag: true,
+              url_trigger: true,
+              event_trigger: true
+            });
+          },
+          autocapture: {
+            url_allowlist: [/^https:\/\/(www\.)?alma\.inc(?:\/|$)/],
+            dom_event_allowlist: ["click"],
+            element_allowlist: ["a", "button"],
+            css_selector_ignorelist: [".ph-no-autocapture", "[data-ph-no-autocapture]"]
+          }
+        });
+      })();
+    </script>
+
+    <style>
+      :root {
+        color-scheme: light;
+        --text: #000;
+        --muted: #686868;
+        --rule: #dedede;
+        --page: #fff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        background: var(--page);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100svh;
+        overflow: hidden;
+        background: var(--page);
+      }
+
+      .page {
+        display: grid;
+        min-height: 100svh;
+        grid-template-rows: minmax(0, 1fr) auto;
+        width: min(100%, 1400px);
+        margin: 0 auto;
+        padding: clamp(24px, 4vw, 56px);
+      }
+
+      main {
+        --content-top: clamp(150px, 23vh, 225px);
+        display: grid;
+        min-height: 0;
+        grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      }
+
+      .intro {
+        position: relative;
+        padding: 0 clamp(28px, 5vw, 72px) 0 0;
+        border-right: 1px solid var(--rule);
+      }
+
+      .brand {
+        margin: 0;
+        font-size: 1.45rem;
+        font-weight: 650;
+        line-height: 1;
+      }
+
+      .statement {
+        position: absolute;
+        top: var(--content-top);
+        left: 0;
+        max-width: 650px;
+        margin: 0;
+        font-size: clamp(2.6rem, 5vw, 5.4rem);
+        font-weight: 500;
+        line-height: 0.98;
+      }
+
+      .details {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: var(--content-top) 0 20px clamp(28px, 5vw, 72px);
+      }
+
+      .copy {
+        max-width: 540px;
+        color: #1b1b1b;
+        font-size: clamp(1rem, 1.25vw, 1.18rem);
+        line-height: 1.52;
+      }
+
+      .copy p {
+        margin: 0;
+      }
+
+      .copy p + p {
+        margin-top: 1em;
+      }
+
+      .waitlist {
+        display: grid;
+        width: min(100%, 480px);
+        grid-template-columns: 1fr auto;
+        margin-top: clamp(28px, 5vh, 48px);
+      }
+
+      label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      input {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid var(--text);
+        border-right: 0;
+        padding: 13px 14px;
+        color: var(--text);
+        background: var(--page);
+        font: inherit;
+        outline: 0;
+      }
+
+      .confirmation {
+        display: none;
+        grid-column: 1 / -1;
+        min-width: 0;
+        min-height: 49px;
+        align-items: center;
+        border: 1px solid var(--text);
+        padding: 13px 14px;
+        margin: 0;
+        color: var(--text);
+        background: var(--page);
+      }
+
+      .waitlist.is-submitted input {
+        display: none;
+      }
+
+      .waitlist.is-submitted .confirmation {
+        display: flex;
+        min-height: 100%;
+        justify-content: center;
+        color: var(--page);
+        background: var(--text);
+        font-weight: 650;
+      }
+
+      .waitlist.is-submitted button {
+        display: none;
+      }
+
+      input::placeholder {
+        color: #858585;
+      }
+
+      button {
+        border: 1px solid var(--text);
+        padding: 13px 18px;
+        color: var(--page);
+        background: var(--text);
+        font: inherit;
+        font-weight: 600;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+
+      button:hover,
+      button:focus-visible {
+        color: var(--text);
+        background: var(--page);
+      }
+
+      button:disabled,
+      button:disabled:hover {
+        color: var(--text);
+        background: var(--page);
+        cursor: default;
+      }
+
+      footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-top: 22px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      footer p {
+        margin: 0;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--text);
+        outline-offset: 3px;
+      }
+
+      input:focus-visible {
+        border-color: var(--text);
+        outline: 0;
+      }
+
+      .social {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .social a {
+        display: inline-flex;
+        width: 22px;
+        height: 22px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .social svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          height: 100svh;
+          padding: 24px;
+        }
+
+        main {
+          display: block;
+        }
+
+        .intro {
+          display: block;
+          padding: 0 0 22px;
+          border-right: 0;
+          border-bottom: 1px solid var(--rule);
+        }
+
+        .statement {
+          position: static;
+          margin-top: clamp(44px, 9vh, 74px);
+          font-size: clamp(2.1rem, 9vw, 3.4rem);
+          line-height: 1.03;
+        }
+
+        .details {
+          display: block;
+          padding: 22px 0;
+        }
+
+        .copy {
+          font-size: 0.92rem;
+          line-height: 1.4;
+        }
+
+        .copy p + p {
+          margin-top: 0.65em;
+        }
+
+        .waitlist {
+          margin-top: 22px;
+        }
+      }
+
+      @media (max-width: 760px) and (max-height: 760px) {
+        .page {
+          padding: 20px;
+        }
+
+        .statement {
+          margin-top: clamp(28px, 5vh, 40px);
+          font-size: clamp(1.9rem, 8vw, 2.8rem);
+        }
+
+        .intro {
+          padding-bottom: 16px;
+        }
+
+        .details {
+          padding: 16px 0;
+        }
+
+        .copy {
+          font-size: 0.82rem;
+          line-height: 1.3;
+        }
+
+        .copy p + p {
+          margin-top: 0.45em;
+        }
+
+        .waitlist {
+          margin-top: 16px;
+        }
+
+        input,
+        .confirmation,
+        button {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+
+        footer {
+          padding-top: 14px;
+        }
+      }
+
+      @media (max-width: 430px) {
+        .waitlist {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+
+        input {
+          border-right: 1px solid var(--text);
+        }
+
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <main>
+        <section class="intro" aria-labelledby="site-title">
+          <p class="brand">ALMA</p>
+          <h1 id="site-title" class="statement">An AI-native interface for the computer you already use.</h1>
+        </section>
+
+        <section class="details" aria-label="About Alma">
+          <div class="copy">
+            <p>The computer interface has changed little since the GUI made apps, windows, menus, and files the main way to work.</p>
+            <p>AI changes what the computer can understand. The interface should change with it. People should start with intent and context, not with the limits of an app.</p>
+            <p>Alma is a new interface to the computer. It helps people reclaim the computer they already use, while keeping them in control.</p>
+          </div>
+
+          <form class="waitlist" action="/waitlist" method="post">
+            <label for="email">Email address</label>
+            <input id="email" class="ph-no-autocapture" name="email" type="email" placeholder="Email address" autocomplete="email" data-ph-no-autocapture required>
+            <p class="confirmation" role="status" aria-live="polite">You're on the waitlist</p>
+            <button type="submit">Continue</button>
+          </form>
+        </section>
+      </main>
+
+      <footer>
+        <nav class="social" aria-label="Social links">
+          <a href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on X" data-platform="x">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.11l11.97 15.64Z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/thinkwithalma" target="_blank" rel="noopener noreferrer" aria-label="Alma on Instagram" data-platform="instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.75 2h8.5A5.76 5.76 0 0 1 22 7.75v8.5A5.76 5.76 0 0 1 16.25 22h-8.5A5.76 5.76 0 0 1 2 16.25v-8.5A5.76 5.76 0 0 1 7.75 2Zm0 2A3.75 3.75 0 0 0 4 7.75v8.5A3.75 3.75 0 0 0 7.75 20h8.5A3.75 3.75 0 0 0 20 16.25v-8.5A3.75 3.75 0 0 0 16.25 4h-8.5ZM12 7.25A4.75 4.75 0 1 1 12 16.75 4.75 4.75 0 0 1 12 7.25Zm0 2A2.75 2.75 0 1 0 12 14.75 2.75 2.75 0 0 0 12 9.25Zm5.1-2.6a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2Z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/tryalmanac/" target="_blank" rel="noopener noreferrer" aria-label="Alma on LinkedIn" data-platform="linkedin">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5A2.5 2.5 0 1 1 4.98 8.5a2.5 2.5 0 0 1 0-5ZM3 21h4V9.75H3V21Zm6.25-11.25H13v1.54h.05c.52-.99 1.8-2.04 3.7-2.04 3.96 0 4.69 2.61 4.69 6V21h-4v-5.1c0-1.22-.02-2.78-1.69-2.78-1.7 0-1.96 1.33-1.96 2.69V21h-4V9.75Z"/></svg>
+          </a>
+        </nav>
+      </footer>
+    </div>
+
+    <script>
+      const waitlistForm = document.querySelector(".waitlist");
+      const emailInput = document.querySelector("#email");
+      const submitButton = waitlistForm.querySelector("button");
+
+      const captureEvent = (eventName, properties, options) => {
+        if (window.posthog && typeof window.posthog.capture === "function") {
+          window.posthog.capture(eventName, properties, options);
+        }
+      };
+
+      const socialClickEvents = {
+        x: "social_x_clicked",
+        instagram: "social_instagram_clicked",
+        linkedin: "social_linkedin_clicked"
+      };
+
+      waitlistForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        waitlistForm.style.minHeight = `${waitlistForm.offsetHeight}px`;
+        captureEvent("waitlist_form_submitted", {
+          form_id: "homepage_waitlist"
+        });
+        emailInput.disabled = true;
+        submitButton.disabled = true;
+
+        try {
+          const response = await fetch("/waitlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: emailInput.value }),
+          });
+          if (!response.ok) throw new Error("request failed");
+          waitlistForm.classList.add("is-submitted");
+        } catch {
+          captureEvent("waitlist_form_failed", {
+            form_id: "homepage_waitlist"
+          });
+          emailInput.disabled = false;
+          submitButton.disabled = false;
+          waitlistForm.style.minHeight = "";
+          emailInput.value = "";
+          emailInput.placeholder = "Something went wrong — try again";
+          emailInput.focus();
+        }
+      });
+
+      document.querySelectorAll(".social [data-platform]").forEach((link) => {
+        link.addEventListener("click", () => {
+          captureEvent(socialClickEvents[link.dataset.platform], {
+            location: "footer"
+          }, {
+            transport: "sendBeacon"
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

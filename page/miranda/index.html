@@ -3,106 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Alma is an AI-native computer interface that helps people control their computer with AI, understand context, and work across existing apps.">
-    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+    <meta name="robots" content="noindex,nofollow">
     <meta name="theme-color" content="#f5f5fa">
-    <link rel="canonical" href="https://alma.inc/">
-
-    <meta property="og:title" content="Alma - The AI-native interface to your computer">
-    <meta property="og:description" content="Alma is an AI-native computer interface that helps people control their computer with AI, understand context, and work across existing apps.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://alma.inc/">
-    <meta property="og:site_name" content="Alma">
-    <meta property="og:locale" content="en_US">
-    <meta property="og:image" content="https://alma.inc/og.png">
-    <meta property="og:image:secure_url" content="https://alma.inc/og.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Alma, an AI-native computer interface">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@thinkwithalma">
-    <meta name="twitter:title" content="Alma - The AI-native interface to your computer">
-    <meta name="twitter:description" content="Alma is an AI-native computer interface that helps people control their computer with AI, understand context, and work across existing apps.">
-    <meta name="twitter:image" content="https://alma.inc/og.png">
-    <meta name="twitter:image:alt" content="Alma, an AI-native computer interface">
-
     <title>Alma - The AI-native interface to your computer</title>
+    <meta name="description" content="Alma is an AI-native interface that lets you start with intent, use your computer, and stay in control.">
     <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/client-logomark-dark.png">
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "Organization",
-            "@id": "https://alma.inc/#organization",
-            "name": "Alma",
-            "url": "https://alma.inc/",
-            "logo": "https://alma.inc/client-logomark-dark.svg",
-            "description": "Alma is an AI-native computer interface that helps people control their computer by describing work.",
-            "sameAs": [
-              "https://x.com/thinkwithalma",
-              "https://www.instagram.com/thinkwithalma",
-              "https://www.linkedin.com/company/tryalmanac/"
-            ]
-          },
-          {
-            "@type": "WebSite",
-            "@id": "https://alma.inc/#website",
-            "name": "Alma",
-            "url": "https://alma.inc/",
-            "description": "Alma is an AI-native computer interface for the computer people already use.",
-            "publisher": {
-              "@id": "https://alma.inc/#organization"
-            },
-            "inLanguage": "en"
-          }
-        ]
-      }
-    </script>
-
-    <script>
-      (() => {
-        const projectToken = "phc_BDaCzyN97ofKKMs83n92a7AANzYVwZLfaPVRr5WLMQy7";
-        const apiHost = "https://us.i.posthog.com";
-        const isProduction = ["alma.inc", "www.alma.inc"].includes(window.location.hostname);
-
-        if (!isProduction) return;
-
-        !function(t,e){var o,n,p,r;e.__SV||(window.posthog&&window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-
-        posthog.init(projectToken, {
-          api_host: apiHost,
-          defaults: "2026-05-30",
-          person_profiles: "identified_only",
-          persistence: "memory",
-          capture_pageview: true,
-          capture_pageleave: true,
-          capture_dead_clicks: false,
-          disable_session_recording: false,
-          session_recording: {
-            maskAllInputs: true
-          },
-          loaded: (posthog) => {
-            posthog.startSessionRecording({
-              sampling: true,
-              linked_flag: true,
-              url_trigger: true,
-              event_trigger: true
-            });
-          },
-          autocapture: {
-            url_allowlist: [/^https:\/\/(www\.)?alma\.inc(?:\/|$)/],
-            dom_event_allowlist: ["click"],
-            element_allowlist: ["a", "button"],
-            css_selector_ignorelist: [".ph-no-autocapture", "[data-ph-no-autocapture]"]
-          }
-        });
-      })();
-    </script>
     <style>
       @font-face {
         font-family: "Miranda Sans";
@@ -132,8 +38,8 @@
         color-scheme: light;
         --ink: #0d0818;
         --muted: #504e59;
-        --glass: rgba(246, 247, 255, 0.025);
-        --glass-line: rgba(255, 255, 255, 0.88);
+        --glass: rgba(246, 247, 255, 0.1);
+        --glass-line: rgba(255, 255, 255, 0.72);
       }
 
       * {
@@ -151,7 +57,7 @@
 
       body {
         color: var(--ink);
-        background: #f7f7fb url("/page/bg.jpg") center / cover no-repeat;
+        background: #f7f7fb url("../bg.jpg") center / cover no-repeat;
         font-family: "Miranda Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         letter-spacing: 0;
       }
@@ -177,14 +83,17 @@
         left: clamp(28px, 6vw, 104px);
         display: inline-flex;
         align-items: center;
+        gap: 5px;
         color: var(--ink);
+        font-size: 32px;
+        font-weight: 700;
         line-height: 1;
         text-decoration: none;
       }
 
-      .brand-logo {
-        width: 102px;
-        height: auto;
+      .brand-mark {
+        width: 29px;
+        height: 29px;
         display: block;
         flex: 0 0 auto;
       }
@@ -202,41 +111,34 @@
         border-radius: 40px;
         background: var(--glass);
         box-shadow:
-          inset 0 2px 1px rgba(255, 255, 255, 1),
-          inset 0 -2px 2px rgba(77, 70, 128, 0.22),
-          inset 2px 0 1px rgba(255, 255, 255, 0.7),
-          inset -2px 0 2px rgba(83, 77, 137, 0.14),
-          0 18px 60px rgba(65, 59, 112, 0.06);
-        -webkit-backdrop-filter: blur(4px) saturate(180%) contrast(106%) brightness(1.02);
-        backdrop-filter: blur(4px) saturate(180%) contrast(106%) brightness(1.02);
+          inset 0 1px 1px rgba(255, 255, 255, 0.96),
+          inset 0 -1px 1px rgba(91, 86, 138, 0.16),
+          inset 1px 0 1px rgba(255, 255, 255, 0.58),
+          inset -1px 0 1px rgba(103, 98, 151, 0.1),
+          0 22px 70px rgba(75, 70, 123, 0.08);
+        -webkit-backdrop-filter: blur(10px) saturate(155%) brightness(1.03);
+        backdrop-filter: blur(10px) saturate(155%) brightness(1.03);
       }
 
       .glass-panel::before {
         position: absolute;
         inset: 0;
-        z-index: 0;
         border-radius: inherit;
         box-shadow:
-          inset 12px 12px 26px rgba(255, 255, 255, 0.16),
-          inset -14px -14px 30px rgba(83, 75, 145, 0.09);
+          inset 12px 12px 28px rgba(255, 255, 255, 0.1),
+          inset -14px -14px 32px rgba(99, 92, 158, 0.055);
         pointer-events: none;
         content: "";
       }
 
-      .glass-panel > * {
-        position: relative;
-        z-index: 1;
-      }
-
       .glass-panel::after {
         position: absolute;
-        inset: 2px;
-        z-index: 2;
-        border: 1px solid rgba(255, 255, 255, 0.48);
-        border-radius: 38px;
+        inset: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 37px;
         box-shadow:
-          inset 0 0 16px rgba(255, 255, 255, 0.1),
-          0 0 2px rgba(70, 64, 122, 0.18);
+          inset 0 0 18px rgba(255, 255, 255, 0.08),
+          0 0 1px rgba(81, 76, 128, 0.14);
         pointer-events: none;
         content: "";
       }
@@ -254,11 +156,6 @@
         color: var(--muted);
         font-size: 16px;
         line-height: 1.48;
-      }
-
-      .intro-followup {
-        display: block;
-        margin-top: 1em;
       }
 
       .waitlist {
@@ -311,7 +208,7 @@
       .waitlist button {
         padding: 0 24px;
         color: #fff;
-        background: #0b0a0d;
+        background: #aaa7b5;
         font-weight: 500;
         cursor: pointer;
       }
@@ -322,10 +219,8 @@
       }
 
       .waitlist button:disabled {
-        color: rgba(255, 255, 255, 0.84);
-        background: rgba(24, 22, 28, 0.82);
-        cursor: default;
-        opacity: 1;
+        cursor: wait;
+        opacity: 0.72;
       }
 
       .confirmation {
@@ -334,14 +229,9 @@
         margin: 0;
         align-items: center;
         justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.72);
-        color: var(--ink);
-        background: rgba(246, 247, 255, 0.12);
+        color: #fff;
+        background: rgba(26, 21, 43, 0.82);
         font-weight: 500;
-        box-shadow:
-          inset 0 1px 1px rgba(255, 255, 255, 0.9),
-          inset 0 -1px 1px rgba(74, 67, 124, 0.12),
-          0 8px 24px rgba(64, 58, 108, 0.04);
       }
 
       .waitlist.is-submitted input,
@@ -390,10 +280,14 @@
         .brand {
           top: 24px;
           left: 22px;
+          font-size: 27px;
         }
 
-        .brand-logo {
-          width: 92px;
+        .brand-mark {
+          width: 26px;
+          height: 26px;
+          border-radius: 8px;
+          font-size: 20px;
         }
 
         .glass-panel {
@@ -487,10 +381,13 @@
 
         .brand {
           top: 14px;
+          font-size: 24px;
         }
 
-        .brand-logo {
-          width: 88px;
+        .brand-mark {
+          width: 25px;
+          height: 25px;
+          font-size: 19px;
         }
 
         .glass-panel {
@@ -550,27 +447,28 @@
   <body>
     <div class="shell">
       <a class="brand" href="/" aria-label="Alma home">
-        <img class="brand-logo" src="/client-logo-dark.svg" alt="Alma">
+        <img class="brand-mark" src="/client-logomark-dark.svg" alt="">
+        <span>Alma</span>
       </a>
 
       <main class="glass-panel">
         <h1>An AI-native interface for your computer.</h1>
-        <p class="intro">The computer interface has changed little since the GUI made apps, windows, and files the way we work.<span class="intro-followup">AI changes what a computer can understand, so the interface should too. Start with intent, not the limits of an app. Alma is a new interface that keeps you in control.</span></p>
+        <p class="intro">The computer interface has changed little since the GUI made apps, windows, and files the way we work. AI changes what a computer can understand, so the interface should too. Start with intent, not the limits of an app. Alma is a new interface that keeps you in control.</p>
 
         <form class="waitlist" action="/waitlist" method="post">
           <label class="sr-only" for="page-email">Email address</label>
-          <input id="page-email" class="ph-no-autocapture" name="email" type="email" placeholder="Enter email address" autocomplete="email" data-ph-no-autocapture required>
-          <button type="submit" disabled>Continue</button>
+          <input id="page-email" class="ph-no-autocapture" name="email" type="email" placeholder="john@gmail.com" autocomplete="email" data-ph-no-autocapture required>
+          <button type="submit">Continue</button>
           <p class="confirmation" role="status" aria-live="polite">You're on the waitlist</p>
         </form>
       </main>
 
       <nav class="social" aria-label="Social links">
-        <a href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer" data-platform="x">Twitter (X)</a>
+        <a href="https://x.com/thinkwithalma" target="_blank" rel="noopener noreferrer">Twitter (X)</a>
         <span aria-hidden="true">•</span>
-        <a href="https://www.instagram.com/thinkwithalma" target="_blank" rel="noopener noreferrer" data-platform="instagram">Instagram</a>
+        <a href="https://www.instagram.com/thinkwithalma" target="_blank" rel="noopener noreferrer">Instagram</a>
         <span aria-hidden="true">•</span>
-        <a href="https://www.linkedin.com/company/tryalmanac/" target="_blank" rel="noopener noreferrer" data-platform="linkedin">LinkedIn</a>
+        <a href="https://www.linkedin.com/company/tryalmanac/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </nav>
     </div>
 
@@ -579,29 +477,8 @@
       const email = form.querySelector("input");
       const button = form.querySelector("button");
 
-      const captureEvent = (eventName, properties, options) => {
-        if (window.posthog && typeof window.posthog.capture === "function") {
-          window.posthog.capture(eventName, properties, options);
-        }
-      };
-
-      const socialClickEvents = {
-        x: "social_x_clicked",
-        instagram: "social_instagram_clicked",
-        linkedin: "social_linkedin_clicked"
-      };
-
-      const syncButtonState = () => {
-        button.disabled = !email.value.includes("@");
-      };
-
-      email.addEventListener("input", syncButtonState);
-
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        captureEvent("waitlist_form_submitted", {
-          form_id: "homepage_waitlist"
-        });
         email.disabled = true;
         button.disabled = true;
 
@@ -614,29 +491,13 @@
 
           if (!response.ok) throw new Error("Request failed");
           form.classList.add("is-submitted");
-          captureEvent("waitlist_form_succeeded", {
-            form_id: "homepage_waitlist"
-          });
         } catch {
-          captureEvent("waitlist_form_failed", {
-            form_id: "homepage_waitlist"
-          });
           email.disabled = false;
+          button.disabled = false;
           email.value = "";
           email.placeholder = "Something went wrong - try again";
-          syncButtonState();
           email.focus();
         }
-      });
-
-      document.querySelectorAll(".social [data-platform]").forEach((link) => {
-        link.addEventListener("click", () => {
-          captureEvent(socialClickEvents[link.dataset.platform], {
-            location: "footer"
-          }, {
-            transport: "sendBeacon"
-          });
-        });
       });
     </script>
   </body>
