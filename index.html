@@ -31,6 +31,8 @@
     <title>Alma - The AI-native interface to your computer</title>
     <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/client-logomark-dark.png">
+    <link rel="preload" href="/page/bg-v2.jpg" as="image" fetchpriority="high">
+    <script>document.documentElement.classList.add("js");</script>
 
     <script type="application/ld+json">
       {
@@ -151,9 +153,22 @@
 
       body {
         color: var(--ink);
-        background: #f7f7fb url("/page/bg.jpg") center / cover no-repeat;
+        background: #f7f7fb;
         font-family: "Miranda Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         letter-spacing: 0;
+      }
+
+      .page-background {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .js body:not(.is-ready) .page-background,
+      .js body:not(.is-ready) .shell {
+        visibility: hidden;
       }
 
       button,
@@ -548,6 +563,22 @@
     </style>
   </head>
   <body>
+    <img class="page-background" src="/page/bg-v2.jpg" alt="" fetchpriority="high" decoding="sync">
+    <script>
+      (() => {
+        const background = document.querySelector(".page-background");
+        const revealPage = () => document.body.classList.add("is-ready");
+
+        if (background.complete) {
+          revealPage();
+          return;
+        }
+
+        background.addEventListener("load", revealPage, { once: true });
+        background.addEventListener("error", revealPage, { once: true });
+        window.setTimeout(revealPage, 5000);
+      })();
+    </script>
     <div class="shell">
       <a class="brand" href="/" aria-label="Alma home">
         <img class="brand-logo" src="/client-logo-dark.svg" alt="Alma">
