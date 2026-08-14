@@ -39,7 +39,7 @@
       :root {
         color-scheme: light;
         --ink: #0d0818;
-        --muted: #504e59;
+        --muted: #5d5a66;
         --glass: rgba(246, 247, 255, 0.025);
         --glass-line: rgba(255, 255, 255, 0.88);
       }
@@ -117,7 +117,7 @@
         height: min(600px, calc(100dvh - 184px));
         min-height: 490px;
         flex-direction: column;
-        padding: 56px 52px;
+        padding: 52px;
         overflow: hidden;
         border: 1px solid var(--glass-line);
         border-radius: 40px;
@@ -166,7 +166,7 @@
         max-width: 420px;
         margin: 0;
         font-size: 54px;
-        font-weight: 700;
+        font-weight: 500;
         line-height: 1.16;
       }
 
@@ -174,12 +174,17 @@
         margin: 28px 0 0;
         color: var(--muted);
         font-size: 16px;
+        font-weight: 400;
         line-height: 1.48;
       }
 
       .intro-followup {
         display: block;
         margin-top: 1em;
+      }
+
+      .no-break {
+        white-space: nowrap;
       }
 
       .waitlist {
@@ -322,7 +327,7 @@
           height: auto;
           min-height: 0;
           max-height: calc(100dvh - 164px);
-          padding: 36px 26px 32px;
+          padding: 28px;
           border-radius: 30px;
         }
 
@@ -378,8 +383,6 @@
         .glass-panel {
           height: auto;
           min-height: 0;
-          padding-top: 30px;
-          padding-bottom: 28px;
         }
 
         h1 {
@@ -416,7 +419,6 @@
 
         .glass-panel {
           max-height: calc(100dvh - 106px);
-          padding: 24px 20px 20px;
           border-radius: 28px;
         }
 
@@ -492,7 +494,7 @@
 
       <main class="glass-panel">
         <h1>An AI-native interface for your computer.</h1>
-        <p class="intro">The computer interface has changed little since the GUI made apps, windows, and files the way we work.<span class="intro-followup">AI changes what a computer can understand, so the interface should too. Start with intent, not the limits of an app. Alma is a new interface that keeps you in control.</span></p>
+        <p class="intro">The computer interface has changed little since the GUI made apps, windows, and files the way we work.<span class="intro-followup">AI changes what computers can understand. The interface should begin with intent and context, not with apps and menus. Alma is a new interface for the computer that keeps you <span class="no-break">in control.</span></span></p>
 
         <form class="waitlist" action="/waitlist" method="post">
           <label class="sr-only" for="page-email">Email address</label>
