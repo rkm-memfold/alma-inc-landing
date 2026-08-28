@@ -81,9 +81,9 @@ request.
 
 Three things the script handles that manual `scp` did not:
 
-- **File list comes from `git ls-files`,** not a hardcoded list. Commits that
-  added `almanac_logo.jpg` and `llms.txt` would each have been silently skipped
-  by a fixed list, leaving the HTML referencing assets that 404.
+- **File list comes from `git ls-files`,** not a hardcoded list. This keeps new
+  public assets from being silently skipped by a fixed list and leaving the
+  HTML with references that 404.
 - **`.well-known` is protected from `--delete`.** It is not in the repo, so an
   unguarded `rsync --delete` would remove it and break certificate renewal.
 - **Repo docs and tooling are excluded** (`DEPLOY.md`, `POSTHOG_SETUP.md`,
