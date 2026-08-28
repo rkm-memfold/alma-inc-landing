@@ -65,6 +65,10 @@ if [[ ${#FILES[@]} -eq 0 ]]; then
   exit 1
 fi
 
+# Apply shared site-wide markup to every public HTML page. New pages inherit
+# these includes automatically; page source files must not duplicate them.
+python3 deploy/apply-global-layout.py "$STAGE"
+
 printf '    %s\n' "${FILES[@]}"
 
 # -a propagates the staging tree's modes, and mktemp -d creates 0700 — which
@@ -91,7 +95,9 @@ for f in "${FILES[@]}"; do
   url_path="$f"
   [[ "$f" == "index.html" ]] && url_path=""
 
-  local_sum="$(shasum -a 256 "$f" | cut -d' ' -f1)"
+  # Compare production against the rendered staging file, which includes the
+  # shared global layout additions applied above.
+  local_sum="$(shasum -a 256 "$STAGE/$f" | cut -d' ' -f1)"
   live_sum="$(curl -sS -m 20 "${SITE}/${url_path}" | shasum -a 256 | cut -d' ' -f1)"
   status="$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "${SITE}/${url_path}")"
 

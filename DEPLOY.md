@@ -73,17 +73,33 @@ Change with `sudo certbot update_account --email <addr>`.
 ```
 
 The script syncs every git-tracked file except the deploy tooling itself, then
-verifies each one over HTTPS by comparing checksums. It exits non-zero if any
-file fails to match, so a silent partial deploy is not possible.
+applies the shared global layout to every public HTML file and verifies each
+rendered file over HTTPS by comparing checksums. It exits non-zero if any file
+fails to match, so a silent partial deploy is not possible.
+
+### Shared global layout
+
+Site-wide HTML belongs in [`deploy/global-layout/`](deploy/global-layout/).
+During deployment, [`deploy/apply-global-layout.py`](deploy/apply-global-layout.py)
+injects those shared includes into every public `*.html` file in the staging
+tree. This currently installs Google Tag Manager container `GTM-T9SDSZMJ`
+immediately inside each page's `<head>` and `<body>`.
+
+New static pages such as `dictation/index.html` inherit the global includes
+automatically. Each page must contain one `<head>` and one `<body>` element, and
+must not contain a page-local copy of the GTM container ID; deployment fails if
+either rule is violated.
 
 No nginx reload is needed for content-only changes — nginx reads from disk per
 request.
 
-Three things the script handles that manual `scp` did not:
+Four things the script handles that manual `scp` did not:
 
 - **File list comes from `git ls-files`,** not a hardcoded list. This keeps new
   public assets from being silently skipped by a fixed list and leaving the
   HTML with references that 404.
+- **The global layout is applied before sync.** Every public HTML page receives
+  shared analytics markup without requiring authors to copy snippets by hand.
 - **`.well-known` is protected from `--delete`.** It is not in the repo, so an
   unguarded `rsync --delete` would remove it and break certificate renewal.
 - **Repo docs and tooling are excluded** (`DEPLOY.md`, `POSTHOG_SETUP.md`,
