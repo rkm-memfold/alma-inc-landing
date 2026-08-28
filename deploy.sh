@@ -2,8 +2,8 @@
 #
 # Deploy the landing page to the Azure VM behind alma.inc.
 #
-# Syncs every git-tracked file except the deploy tooling itself, then verifies
-# each file over HTTPS by comparing checksums. See DEPLOY.md for infrastructure.
+# Builds every page through the shared layout, syncs the generated site, then
+# verifies each file over HTTPS by comparing checksums. See DEPLOY.md.
 #
 # Usage:
 #   ./deploy.sh            deploy the current working tree
@@ -14,15 +14,6 @@ set -euo pipefail
 HOST="azureuser@168.61.34.144"
 WEBROOT="/var/www/alma"
 SITE="https://alma.inc"
-
-# Tracked paths that must never be published — deploy docs leak infra details
-# (subscription id, IP, ssh user) and the nginx snapshot is reference material.
-is_excluded() {
-  case "$1" in
-    DEPLOY.md|POSTHOG_SETUP.md|deploy.sh|deploy/*|backend/*|.gitignore|README.md) return 0 ;;
-    *) return 1 ;;
-  esac
-}
 
 cd "$(git rev-parse --show-toplevel)"
 
@@ -47,18 +38,17 @@ fi
 
 echo "==> deploying $(git rev-parse --short HEAD) to ${HOST}:${WEBROOT}"
 
-# Stage the publishable subset so rsync --delete can prune removed files without
-# us hand-maintaining a file list (the bug that nearly dropped llms.txt).
+# Build into a disposable staging directory. Only files in public/ and generated
+# pages can reach the webroot; source, backend, docs, and tooling stay private.
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
+python3 scripts/build_site.py --output "$STAGE"
+
 FILES=()
-while IFS= read -r f; do
-  is_excluded "$f" && continue
-  mkdir -p "$STAGE/$(dirname "$f")"
-  cp "$f" "$STAGE/$f"
-  FILES+=("$f")
-done < <(git ls-files)
+while IFS= read -r -d '' f; do
+  FILES+=("${f#"$STAGE"/}")
+done < <(find "$STAGE" -type f -print0)
 
 if [[ ${#FILES[@]} -eq 0 ]]; then
   echo "no files to deploy" >&2
@@ -91,7 +81,7 @@ for f in "${FILES[@]}"; do
   url_path="$f"
   [[ "$f" == "index.html" ]] && url_path=""
 
-  local_sum="$(shasum -a 256 "$f" | cut -d' ' -f1)"
+  local_sum="$(shasum -a 256 "$STAGE/$f" | cut -d' ' -f1)"
   live_sum="$(curl -sS -m 20 "${SITE}/${url_path}" | shasum -a 256 | cut -d' ' -f1)"
   status="$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "${SITE}/${url_path}")"
 

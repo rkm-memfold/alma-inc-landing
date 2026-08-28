@@ -11,3 +11,6 @@ backend/staticfiles/
 # Local env files — real secrets live in /etc/alma-backend.env on the VM
 .env
 *.env
+
+# Generated static site
+.build/

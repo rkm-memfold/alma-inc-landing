@@ -1,7 +1,8 @@
 # Deployment
 
-The landing page is served by nginx from a single Azure VM. Static files only —
-no build step.
+The site is served by nginx from a single Azure VM. Pages are static HTML built
+through `site/layout.html`, which installs GTM once for every current and future
+page. Public assets live in `public/`.
 
 ## Infrastructure
 
@@ -72,25 +73,22 @@ Change with `sudo certbot update_account --email <addr>`.
 ./deploy.sh --pull     # git pull --ff-only first, then deploy
 ```
 
-The script syncs every git-tracked file except the deploy tooling itself, then
-verifies each one over HTTPS by comparing checksums. It exits non-zero if any
-file fails to match, so a silent partial deploy is not possible.
+The script builds the site into a temporary directory, syncs only that generated
+output, then verifies every file over HTTPS by comparing checksums. It exits
+non-zero if any file fails to match, so a silent partial deploy is not possible.
 
 No nginx reload is needed for content-only changes — nginx reads from disk per
 request.
 
 Three things the script handles that manual `scp` did not:
 
-- **File list comes from `git ls-files`,** not a hardcoded list. Commits that
-  added `almanac_logo.jpg` and `llms.txt` would each have been silently skipped
-  by a fixed list, leaving the HTML referencing assets that 404.
+- **HTML comes only from `site/pages/`.** Each page is wrapped by the shared
+  layout and receives both GTM snippets. Assets come only from `public/`.
 - **`.well-known` is protected from `--delete`.** It is not in the repo, so an
   unguarded `rsync --delete` would remove it and break certificate renewal.
-- **Repo docs and tooling are excluded** (`DEPLOY.md`, `POSTHOG_SETUP.md`,
-  `deploy.sh`, `deploy/`, `backend/`). These are tracked but must never be
-  served from the webroot. Anything added to the repo that should not be
-  reachable at `https://alma.inc/<path>` must be added to `is_excluded()` in
-  `deploy.sh`.
+- **Repo docs and tooling are excluded by construction.** Only generated pages
+  and `public/` are staged, so `DEPLOY.md`, backend code, scripts, and templates
+  cannot accidentally be served.
 
   Note this repo is **public**: keep credentials and the Azure subscription id
   out of it. Real secrets live only in `/etc/alma-backend.env` on the VM.
