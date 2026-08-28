@@ -1,0 +1,11 @@
+[Unit]
+Description=Poll origin/main for landing page changes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+# Spread load slightly so the poll does not hit GitHub on an exact boundary.
+RandomizedDelaySec=20s
+
+[Install]
+WantedBy=timers.target
