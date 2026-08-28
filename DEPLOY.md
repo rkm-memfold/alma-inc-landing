@@ -23,6 +23,8 @@ page. Public assets live in `public/`.
 |---|---|
 | Webroot | `/var/www/alma` (owned by `www-data`) |
 | nginx vhost | `/etc/nginx/sites-available/alma` → symlinked into `sites-enabled/` |
+| Deploy clone | `/opt/alma-site` — read-only checkout of `origin/main` used by the autodeploy script |
+| Autodeploy | `/usr/local/bin/alma-autodeploy.sh`, run by `alma-autodeploy.timer` and by GitHub Actions (sources in `deploy/`) |
 | Certs | `/etc/letsencrypt/live/alma.inc/` |
 
 A copy of the live vhost is checked in at [`deploy/nginx-alma.conf`](deploy/nginx-alma.conf).
@@ -68,12 +70,29 @@ Change with `sudo certbot update_account --email <addr>`.
 
 ## Deploying content changes
 
+Pushes to `main` deploy automatically. Two independent paths keep the live site
+in sync with `origin/main`; both end up running the same script on the VM, and
+a redundant run is a harmless no-op.
+
+1. **GitHub Actions** — [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)
+   runs on every push to `main` (pull requests only get the build step). It
+   builds the site, logs in to Azure with the workflow's OIDC token, uses
+   `az vm run-command` to execute [`deploy/gha-remote-deploy.sh`](deploy/gha-remote-deploy.sh)
+   on the VM, then checksum-verifies every built file over HTTPS with
+   [`deploy/verify-live.sh`](deploy/verify-live.sh). The run is red if the live
+   site differs from the build or if repo internals are reachable.
+2. **VM timer** — [`deploy/alma-autodeploy.timer`](deploy/alma-autodeploy.timer)
+   polls `origin/main` every 2 minutes and deploys if it moved. Fallback for
+   when Actions is unavailable.
+
+Manual deploy of a working tree over SSH is still possible:
+
 ```sh
 ./deploy.sh            # deploy the current working tree
 ./deploy.sh --pull     # git pull --ff-only first, then deploy
 ```
 
-The script builds the site into a temporary directory, syncs only that generated
+Every path builds the site into a temporary directory, syncs only that generated
 output, then verifies every file over HTTPS by comparing checksums. It exits
 non-zero if any file fails to match, so a silent partial deploy is not possible.
 
@@ -92,6 +111,60 @@ Three things the script handles that manual `scp` did not:
 
   Note this repo is **public**: keep credentials and the Azure subscription id
   out of it. Real secrets live only in `/etc/alma-backend.env` on the VM.
+
+### GitHub Actions → Azure identity
+
+The workflow holds no keys. It authenticates with GitHub's OIDC token against a
+Microsoft Entra app registration whose federated credential trusts only this
+repo's `main` branch, and the app's only permission is to run commands on the
+one VM.
+
+| Item | Value |
+|---|---|
+| Entra app | `alma-landing-github-deploy` (federated credential `github-main`, subject `repo:rkm-memfold/alma-inc-landing:ref:refs/heads/main`) |
+| Role | custom `Alma Landing VM Run Command` — `Microsoft.Compute/virtualMachines/read` + `.../runCommand/action`, assignable within `alma-landing-rg` |
+| Assignment | that role, scoped to the `alma-landing-vm` resource only |
+| Repo secrets | `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` (IDs, not key material — but keep them out of the repo) |
+
+To recreate it (e.g. in a new subscription):
+
+```sh
+APP_ID=$(az ad app create --display-name alma-landing-github-deploy --sign-in-audience AzureADMyOrg --query appId -o tsv)
+az ad sp create --id "$APP_ID"
+az ad app federated-credential create --id "$(az ad app show --id "$APP_ID" --query id -o tsv)" --parameters '{
+  "name": "github-main",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:rkm-memfold/alma-inc-landing:ref:refs/heads/main",
+  "audiences": ["api://AzureADTokenExchange"]}'
+SUB=$(az account show --query id -o tsv)
+az role definition create --role-definition "{\"Name\":\"Alma Landing VM Run Command\",
+  \"Actions\":[\"Microsoft.Compute/virtualMachines/read\",\"Microsoft.Compute/virtualMachines/runCommand/action\"],
+  \"AssignableScopes\":[\"/subscriptions/$SUB/resourceGroups/alma-landing-rg\"]}"
+az role assignment create --assignee-object-id "$(az ad sp list --filter "appId eq '$APP_ID'" --query '[0].id' -o tsv)" \
+  --assignee-principal-type ServicePrincipal --role "Alma Landing VM Run Command" \
+  --scope "$(az vm show -g alma-landing-rg -n alma-landing-vm --query id -o tsv)"
+gh secret set AZURE_CLIENT_ID --body "$APP_ID"
+gh secret set AZURE_TENANT_ID --body "$(az account show --query tenantId -o tsv)"
+gh secret set AZURE_SUBSCRIPTION_ID --body "$SUB"
+```
+
+### Updating the autodeploy script on the VM
+
+`deploy/alma-autodeploy.sh` is the copy of `/usr/local/bin/alma-autodeploy.sh`.
+It is not deployed automatically (it is what does the deploying), so after
+changing it, install it by hand and force a rebuild. `az vm run-command` works
+even when port 22 is unreachable from your network:
+
+```sh
+az vm run-command invoke -g alma-landing-rg -n alma-landing-vm --command-id RunShellScript \
+  --scripts "echo $(base64 < deploy/alma-autodeploy.sh | tr -d '\n') | base64 -d > /usr/local/bin/alma-autodeploy.sh \
+    && chmod 755 /usr/local/bin/alma-autodeploy.sh && /usr/local/bin/alma-autodeploy.sh --force" \
+  --query 'value[0].message' -o tsv
+```
+
+The timer unit files install the same way (`/etc/systemd/system/alma-autodeploy.{service,timer}`,
+then `systemctl daemon-reload && systemctl enable --now alma-autodeploy.timer`).
+Deploy history is in `journalctl -t alma-autodeploy`.
 
 ## Waitlist backend (Django + unfold)
 
