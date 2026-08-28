@@ -121,7 +121,8 @@ one VM.
 
 | Item | Value |
 |---|---|
-| Entra app | `alma-landing-github-deploy` (federated credential `github-main`, subject `repo:rkm-memfold/alma-inc-landing:ref:refs/heads/main`) |
+| Entra app | `alma-landing-github-deploy` (federated credential `github-main`, subject `repo:rkm-memfold@300379847/alma-inc-landing@1306441923:ref:refs/heads/main`) |
+| Subject format | GitHub embeds the org and repo ids in the `sub` claim, so the subject must include them; the exact value is printed under "Federated token details" in the `azure/login` step log if it ever needs re-checking |
 | Role | custom `Alma Landing VM Run Command` — `Microsoft.Compute/virtualMachines/read` + `.../runCommand/action`, assignable within `alma-landing-rg` |
 | Assignment | that role, scoped to the `alma-landing-vm` resource only |
 | Repo secrets | `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID` (IDs, not key material — but keep them out of the repo) |
@@ -134,7 +135,7 @@ az ad sp create --id "$APP_ID"
 az ad app federated-credential create --id "$(az ad app show --id "$APP_ID" --query id -o tsv)" --parameters '{
   "name": "github-main",
   "issuer": "https://token.actions.githubusercontent.com",
-  "subject": "repo:rkm-memfold/alma-inc-landing:ref:refs/heads/main",
+  "subject": "repo:rkm-memfold@300379847/alma-inc-landing@1306441923:ref:refs/heads/main",
   "audiences": ["api://AzureADTokenExchange"]}'
 SUB=$(az account show --query id -o tsv)
 az role definition create --role-definition "{\"Name\":\"Alma Landing VM Run Command\",
