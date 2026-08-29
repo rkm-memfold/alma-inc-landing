@@ -15,6 +15,7 @@ PAGES = ROOT / "site" / "pages"
 LAYOUT = ROOT / "site" / "layout.html"
 PUBLIC = ROOT / "public"
 GTM_ID = "GTM-T9SDSZMJ"
+POSTHOG_TOKEN = "phc_rbccCdUpbKQfs7ZeKLM8UclxqYQDaX6XRIxkrERj3FE"
 
 
 def extract(pattern: str, document: str, source: Path, label: str) -> re.Match[str]:
@@ -29,6 +30,10 @@ def render_page(source: Path, layout: str) -> str:
     if GTM_ID in document:
         raise ValueError(
             f"{source.relative_to(ROOT)} contains GTM directly; it belongs only in site/layout.html"
+        )
+    if POSTHOG_TOKEN in document or "posthog.init" in document:
+        raise ValueError(
+            f"{source.relative_to(ROOT)} contains PostHog directly; it belongs only in site/layout.html"
         )
 
     html = extract(r"<html\b(?P<attrs>[^>]*)>", document, source, "<html> element")
@@ -54,6 +59,8 @@ def render_page(source: Path, layout: str) -> str:
 
     if rendered.count(GTM_ID) != 2:
         raise ValueError("the shared layout must contain exactly two GTM container references")
+    if rendered.count(POSTHOG_TOKEN) != 1:
+        raise ValueError("the shared layout must contain exactly one PostHog project token")
     return rendered.rstrip() + "\n"
 
 
