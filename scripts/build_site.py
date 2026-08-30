@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import tempfile
@@ -15,7 +16,20 @@ PAGES = ROOT / "site" / "pages"
 LAYOUT = ROOT / "site" / "layout.html"
 PUBLIC = ROOT / "public"
 GTM_ID = "GTM-T9SDSZMJ"
-POSTHOG_TOKEN = "phc_rbccCdUpbKQfs7ZeKLM8UclxqYQDaX6XRIxkrERj3FE"
+POSTHOG_TOKEN_FILE = Path("/etc/alma-posthog-project-token")
+POSTHOG_TOKEN_PLACEHOLDER = "{{ posthog_project_token }}"
+
+
+def get_posthog_project_token() -> str:
+    token = os.environ.get("POSTHOG_PROJECT_TOKEN", "").strip()
+    if not token and POSTHOG_TOKEN_FILE.is_file():
+        token = POSTHOG_TOKEN_FILE.read_text(encoding="utf-8").strip()
+    if not re.fullmatch(r"phc_[A-Za-z0-9]+", token):
+        raise ValueError(
+            "POSTHOG_PROJECT_TOKEN must be supplied through the environment "
+            f"or {POSTHOG_TOKEN_FILE}"
+        )
+    return token
 
 
 def extract(pattern: str, document: str, source: Path, label: str) -> re.Match[str]:
@@ -25,13 +39,13 @@ def extract(pattern: str, document: str, source: Path, label: str) -> re.Match[s
     return match
 
 
-def render_page(source: Path, layout: str) -> str:
+def render_page(source: Path, layout: str, posthog_token: str) -> str:
     document = source.read_text(encoding="utf-8")
     if GTM_ID in document:
         raise ValueError(
             f"{source.relative_to(ROOT)} contains GTM directly; it belongs only in site/layout.html"
         )
-    if POSTHOG_TOKEN in document or "posthog.init" in document:
+    if re.search(r"phc_[A-Za-z0-9]+", document) or "posthog.init" in document:
         raise ValueError(
             f"{source.relative_to(ROOT)} contains PostHog directly; it belongs only in site/layout.html"
         )
@@ -53,19 +67,21 @@ def render_page(source: Path, layout: str) -> str:
     rendered = (
         layout.replace("{{ lang }}", lang)
         .replace("{{ body_attributes }}", body_attributes)
+        .replace(POSTHOG_TOKEN_PLACEHOLDER, posthog_token)
         .replace("{{ head }}", head.group("content").strip("\n"))
         .replace("{{ body }}", body.group("content").strip("\n"))
     )
 
     if rendered.count(GTM_ID) != 2:
         raise ValueError("the shared layout must contain exactly two GTM container references")
-    if rendered.count(POSTHOG_TOKEN) != 1:
+    if rendered.count(posthog_token) != 1:
         raise ValueError("the shared layout must contain exactly one PostHog project token")
     return rendered.rstrip() + "\n"
 
 
 def build(output: Path) -> list[Path]:
     layout = LAYOUT.read_text(encoding="utf-8")
+    posthog_token = get_posthog_project_token()
     page_sources = sorted(PAGES.rglob("*.html"))
     if not page_sources:
         raise ValueError("site/pages contains no HTML pages")
@@ -90,7 +106,9 @@ def build(output: Path) -> list[Path]:
             if destination.exists():
                 raise ValueError(f"page output conflicts with public asset: {destination.relative_to(staging)}")
             destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_text(render_page(source, layout), encoding="utf-8")
+            destination.write_text(
+                render_page(source, layout, posthog_token), encoding="utf-8"
+            )
 
         generated_pages = sorted(path.relative_to(staging) for path in staging.rglob("*.html"))
         if output.exists():

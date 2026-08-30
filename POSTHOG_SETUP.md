@@ -1,7 +1,10 @@
 # PostHog setup
 
 The production homepage contains the PostHog JavaScript snippet and event
-tracking. The project token and US Cloud ingestion host are configured.
+tracking. The US Cloud ingestion host is configured. The browser-visible,
+write-only project token is injected at build time rather than committed to
+source control. Supply it with `POSTHOG_PROJECT_TOKEN`; production also keeps a
+root-only copy at `/etc/alma-posthog-project-token` for VM builds.
 
 ## Consent and browser storage
 
@@ -44,6 +47,12 @@ paths. Reject Statistics and confirm no PostHog requests or replay are created.
 Then accept Statistics, visit `https://alma.inc/`, submit a test email, and open
 one social link. Confirm the pageview and both custom event names appear. Reload
 the page and confirm the PostHog distinct ID remains unchanged.
+
+For a local build:
+
+```sh
+POSTHOG_PROJECT_TOKEN='<project-token>' python3 scripts/build_site.py
+```
 
 Official references:
 

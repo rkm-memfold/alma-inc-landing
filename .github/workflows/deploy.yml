@@ -35,6 +35,10 @@ jobs:
       - name: Build pages through the shared layout
         # Not .build: upload-artifact ignores hidden paths by default.
         run: python3 scripts/build_site.py --output "$RUNNER_TEMP/site"
+        env:
+          # PRs do not deploy and may originate from forks, where secrets are
+          # intentionally unavailable. Their build only needs a valid sentinel.
+          POSTHOG_PROJECT_TOKEN: ${{ github.event_name == 'pull_request' && 'phc_test' || secrets.POSTHOG_PROJECT_TOKEN }}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -67,13 +71,15 @@ jobs:
 
       - name: Run autodeploy on the VM
         id: remote
+        env:
+          POSTHOG_PROJECT_TOKEN: ${{ secrets.POSTHOG_PROJECT_TOKEN }}
         run: |
           out="$(az vm run-command invoke \
             --resource-group alma-landing-rg \
             --name alma-landing-vm \
             --command-id RunShellScript \
             --scripts @deploy/gha-remote-deploy.sh \
-            --parameters "$GITHUB_SHA" \
+            --parameters "$GITHUB_SHA" "$POSTHOG_PROJECT_TOKEN" \
             --query 'value[0].message' -o tsv)"
           printf '%s\n' "$out"
           if ! grep -q '^status=ok$' <<<"$out"; then
