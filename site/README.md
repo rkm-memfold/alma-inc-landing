@@ -31,5 +31,5 @@ python3 scripts/render_legal.py
 ```
 
 They are the copies Alma links to from its sign-in gate, so the URLs
-`https://alma.inc/terms` and `https://alma.inc/privacy` are a contract with
+`https://alma.inc/terms/` and `https://alma.inc/privacy/` are a contract with
 released builds of the app: keep them, and redirect if they ever move.

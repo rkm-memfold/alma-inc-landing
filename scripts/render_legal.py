@@ -29,21 +29,23 @@ PAGES = ROOT / "site" / "pages"
 SITE = "https://alma.inc"
 
 # The documents cite each other by file name, which is right beside them and
-# wrong in a browser.
-PATHS = {"terms.md": "/terms", "privacy.md": "/privacy"}
+# wrong in a browser. The trailing slash is the URL that answers 200: nginx
+# serves these as directory indexes and 301s the bare path onto the slash, so
+# linking without it costs every reader a redirect.
+PATHS = {"terms.md": "/terms/", "privacy.md": "/privacy/"}
 
 DOCUMENTS = {
     "terms": {
-        "path": "terms",
+        "path": "terms/",
         "title": "Terms and Conditions",
         "description": "The terms you agree to when you use Alma.",
-        "other": ("Privacy Policy", "/privacy"),
+        "other": ("Privacy Policy", "/privacy/"),
     },
     "privacy": {
-        "path": "privacy",
+        "path": "privacy/",
         "title": "Privacy Policy",
         "description": "What Alma collects, what it never collects, and the settings that decide.",
-        "other": ("Terms and Conditions", "/terms"),
+        "other": ("Terms and Conditions", "/terms/"),
     },
 }
 
@@ -423,7 +425,7 @@ def main() -> None:
             other_title=other_title,
             other_href=other_href,
         )
-        destination = PAGES / meta["path"] / "index.html"
+        destination = PAGES / meta["path"].strip("/") / "index.html"
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(page, encoding="utf-8")
         written.append(destination.relative_to(ROOT))
