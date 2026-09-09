@@ -40,6 +40,7 @@
       img.mark { width: 2.6rem; height: 2.6rem; display: block; margin-bottom: 1rem; }
       h1 { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 0.4rem; }
       p { color: var(--muted); margin: 0 0 1.3rem; }
+      strong { color: var(--ink); font-weight: 500; }
       .row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
       a.button {
         display: inline-flex; align-items: center; justify-content: center; height: 2.4rem;
@@ -56,82 +57,77 @@
     <main>
       <img class="mark" alt="" src="/client-logomark-dark.svg">
       <h1>You're invited to Alma</h1>
-      <p id="lead">Dictation for your Mac that writes the way you do.</p>
+      <p id="lead">Setting up your account…</p>
       <div class="row">
         <a id="download" class="button primary" href="#" aria-disabled="true">Get Alma</a>
-        <a id="open" class="button secondary" href="#" aria-disabled="true">Open Alma</a>
+        <a id="open" class="button secondary" href="ai.almaapp.helper://" hidden>Open Alma</a>
       </div>
-      <p class="note" id="note">Already installed? Open Alma and you're in.</p>
+      <p class="note" id="note"></p>
     </main>
+    <script
+      src="https://clerk.alma.inc/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+      data-clerk-publishable-key="pk_live_Y2xlcmsuYWxtYS5pbmMk"></script>
     <script>
-      // Clerk lands here after the invitation is accepted, with the ticket in
-      // the query. Alma receives the same parameters through its URL scheme,
-      // which is what signs the invited address in.
       const here = new URL(window.location.href);
       const ticket = here.searchParams.get("__clerk_ticket");
-      const carried = ["__clerk_ticket", "__clerk_status"]
-        .map((name) => [name, here.searchParams.get(name)])
-        .filter(([, value]) => value);
 
       const lead = document.getElementById("lead");
       const note = document.getElementById("note");
       const open = document.getElementById("open");
       const download = document.getElementById("download");
 
-      const RESUMING = "alma.invite.downloaded";
-      const WAIT_FOR_ALMA = 2000;
-      let handedOff = false;
-
-      function armed() {
-        try { return sessionStorage.getItem(RESUMING) === ticket; } catch { return false; }
-      }
-      function arm(value) {
-        try {
-          if (value) sessionStorage.setItem(RESUMING, value);
-          else sessionStorage.removeItem(RESUMING);
-        } catch { /* private windows refuse storage; the buttons still work */ }
+      function ready(email) {
+        lead.innerHTML = email
+          ? "Your account is ready: <strong>" + email + "</strong>"
+          : "Your account is ready.";
+        note.textContent = "Get Alma, open it, and sign in"
+          + (email ? " as " + email + "." : ".")
+          + " Already installed? Open Alma.";
+        open.hidden = false;
       }
 
-      // Nothing can ask macOS whether an app is installed, so the answer is
-      // read from what happens: Alma opening takes the focus off this tab.
-      function handOff() {
-        if (handedOff || open.hasAttribute("aria-disabled")) return;
-        handedOff = true;
-        arm(null);
-        const waiting = lead.textContent;
-        const held = document.hasFocus();
-        lead.textContent = "Opening Alma…";
-        window.location.href = open.href;
-        window.setTimeout(() => {
-          if (held && !document.hasFocus()) return;
-          handedOff = false;
-          lead.textContent = waiting;
-          note.textContent = "Alma didn't open, so it's probably not on this Mac yet. Get it above.";
-        }, WAIT_FOR_ALMA);
-      }
-
-      if (ticket) {
-        const query = carried
-          .map(([name, value]) => name + "=" + encodeURIComponent(value))
-          .join("&");
-        open.href = "ai.almaapp.helper://invite?" + query;
-        open.removeAttribute("aria-disabled");
-
-        if (armed() || here.searchParams.get("__clerk_status") === "sign_in") {
-          handOff();
+      // The invitation is accepted right here, in the browser: the ticket
+      // creates the account with its email already verified, so the app's
+      // ordinary sign-in (Google, or an email code) simply works afterwards.
+      async function accept() {
+        if (!ticket) {
+          lead.textContent = "This link is missing its invitation. Open the one from your email, or ask for a fresh one.";
+          note.textContent = "You can still get Alma below; it will ask you to sign in.";
+          return;
         }
-        download.addEventListener("click", () => {
-          arm(ticket);
-          note.textContent = "Drag Alma into Applications and open it. Come back to this tab and it finishes on its own.";
-          window.addEventListener("focus", handOff);
-        });
-      } else {
-        lead.textContent = "This link is missing its invitation. Open the one from your email, or ask for a fresh one.";
-        note.textContent = "You can still get Alma below; it will ask you to sign in.";
+        try {
+          await Clerk.load();
+        } catch {
+          lead.textContent = "The sign-in service isn't reachable right now. Refresh in a moment.";
+          return;
+        }
+        if (Clerk.user) {
+          ready(Clerk.user.primaryEmailAddress?.emailAddress ?? "");
+          return;
+        }
+        try {
+          const attempt = await Clerk.client.signUp.create({ strategy: "ticket", ticket });
+          if (attempt.status === "complete") {
+            await Clerk.setActive({ session: attempt.createdSessionId });
+            ready(attempt.emailAddress ?? "");
+            return;
+          }
+          lead.textContent = "This invitation needs one more step with the account service. Refresh, or ask for a fresh link.";
+        } catch (refusal) {
+          const already = /already|taken|exists/i.test(String(refusal?.errors?.[0]?.code ?? refusal));
+          lead.textContent = already
+            ? "This invitation is already set up."
+            : "This invitation link has expired or was already used. Ask for a fresh one.";
+          if (already) {
+            note.textContent = "Get Alma and sign in with the email that was invited. Already installed? Open Alma.";
+            open.hidden = false;
+          }
+        }
       }
+      accept();
 
-      // The build offered is the one the update feed ships, so an invited
-      // person installs exactly what everyone else runs.
+      // The build offered is the one the update feed ships, served from
+      // this domain, so an invited person installs what everyone runs.
       fetch("/appcast.xml", { cache: "no-store" })
         .then((response) => (response.ok ? response.text() : Promise.reject(response.status)))
         .then((xml) => {
@@ -139,9 +135,10 @@
           const stable = [...feed.querySelectorAll("item")].find(
             (item) => !item.getElementsByTagName("sparkle:channel").length,
           );
-          const url = stable?.querySelector("enclosure")?.getAttribute("url");
-          if (!url) throw new Error("no stable build in the feed");
-          download.href = url;
+          const enclosure = stable?.querySelector("enclosure")?.getAttribute("url");
+          if (!enclosure) throw new Error("no stable build in the feed");
+          const file = new URL(enclosure).pathname.split("/").pop();
+          download.href = "/download/" + file;
           download.removeAttribute("aria-disabled");
           const floor = stable.getElementsByTagName("sparkle:minimumSystemVersion")[0]?.textContent;
           if (floor) note.textContent += " Needs macOS " + floor + " or later.";
