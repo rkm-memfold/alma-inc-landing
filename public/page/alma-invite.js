@@ -7,7 +7,6 @@
   const els = {
     readySub: document.getElementById("ready-sub"),
     download: document.getElementById("download"),
-    open: document.getElementById("open"),
     closedTitle: document.getElementById("closed-title"),
     closedSub: document.getElementById("closed-sub"),
     form: document.getElementById("form"),
@@ -27,7 +26,8 @@
 
   const show = (state) => { card.dataset.state = state; };
 
-  function closed(kind) {
+  function closed(kind, detail) {
+    if (detail !== undefined) console.error("alma invite:", kind, detail);
     els.closedTitle.textContent = CLOSED[kind][0];
     els.closedSub.textContent = CLOSED[kind][1];
     show("closed");
@@ -37,10 +37,6 @@
     els.readySub.innerHTML = email
       ? "Signed in as <strong>" + email + "</strong>."
       : "Your account is ready.";
-    els.open.hidden = false;
-    els.open.addEventListener("click", () => {
-      window.location.href = "ai.almaapp.helper://";
-    });
     if (!(await downloadReady)) {
       els.readySub.textContent = "The download is not reachable right now. Refresh in a moment.";
     }
@@ -67,11 +63,11 @@
   })();
 
   async function consumeTicket(ticket) {
-    if (typeof Clerk === "undefined") return closed("error");
+    if (typeof Clerk === "undefined") return closed("error", "clerk-js did not load");
     try {
       await Clerk.load();
-    } catch {
-      return closed("error");
+    } catch (failure) {
+      return closed("error", failure);
     }
     if (Clerk.user) {
       ready(Clerk.user.primaryEmailAddress?.emailAddress ?? "");
@@ -84,11 +80,11 @@
         ready(attempt.emailAddress ?? "");
         return;
       }
-      closed("error");
+      closed("error", attempt.status);
     } catch (refusal) {
-      const already = /already|taken|exists/i.test(String(refusal?.errors?.[0]?.code ?? refusal));
-      if (already) ready("");
-      else closed("used");
+      const code = String(refusal?.errors?.[0]?.code ?? refusal);
+      if (/already|taken|exists/i.test(code)) ready("");
+      else closed("used", refusal);
     }
   }
 
