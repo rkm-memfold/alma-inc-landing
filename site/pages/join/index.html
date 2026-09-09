@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Join Alma</title>
+    <meta name="description" content="Ask for access to Alma for the Mac.">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/page/alma-app-icon.png" type="image/png">
+    <style>
+      @font-face {
+        font-family: "Miranda Sans";
+        src: url("/page/fonts/miranda-400.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Miranda Sans";
+        src: url("/page/fonts/miranda-500.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+      }
+      :root { color-scheme: light; --ink: #0d0818; --muted: #5d5a66; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100vh; display: grid; place-items: center;
+        background: #f4f4f8 url("/page/bg-v2.jpg") center / cover no-repeat fixed;
+        color: var(--ink);
+        font-family: "Miranda Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        font-size: 16px; line-height: 1.55;
+      }
+      main {
+        width: min(26rem, 100% - 3rem); padding: 2.4rem 2.2rem; border-radius: 1.1rem;
+        background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 18px 50px rgba(13, 8, 24, 0.12);
+      }
+      img.mark { width: 3rem; height: 3rem; display: block; margin-bottom: 1rem; }
+      h1 { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 0.4rem; }
+      p { color: var(--muted); margin: 0 0 1.3rem; }
+      form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      input[type="email"] {
+        flex: 1 1 12rem; height: 2.4rem; padding: 0 0.85rem; border-radius: 0.6rem;
+        border: 1px solid rgba(13, 8, 24, 0.18); background: #ffffff;
+        font: inherit; color: var(--ink);
+      }
+      input[type="email"]:focus { outline: 2px solid rgba(13, 8, 24, 0.4); outline-offset: 1px; }
+      button {
+        height: 2.4rem; padding: 0 1.15rem; border: 0; border-radius: 0.6rem;
+        background: var(--ink); color: #ffffff; font: inherit; font-weight: 500;
+        cursor: pointer;
+      }
+      button[disabled] { opacity: 0.45; cursor: default; }
+      .note { font-size: 0.85rem; color: var(--muted); margin: 1.4rem 0 0; }
+      @media (max-width: 480px) {
+        main { padding: 1.9rem 1.4rem; }
+        button { flex: 1 1 auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img class="mark" alt="" src="/page/alma-app-icon.png" srcset="/page/alma-app-icon@2x.png 2x">
+      <h1>Join Alma</h1>
+      <p id="lead">Leave your email and you're on the list. Invitations go out in waves.</p>
+      <form id="form">
+        <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        <button id="submit" type="submit">Join the list</button>
+      </form>
+      <p class="note" id="note"></p>
+    </main>
+    <script>
+      const code = window.location.pathname.split("/").filter(Boolean).pop() ?? "";
+      const lead = document.getElementById("lead");
+      const note = document.getElementById("note");
+      const form = document.getElementById("form");
+      const email = document.getElementById("email");
+      const submit = document.getElementById("submit");
+
+      const CLOSED = {
+        expired: "This link has expired. Ask whoever shared it for a fresh one.",
+        full: "This link has admitted everyone it can. Ask for a fresh one.",
+        unknown: "This link isn't one we recognise. Check it, or ask for a fresh one.",
+      };
+
+      function closed(message) {
+        lead.textContent = message;
+        form.hidden = true;
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        submit.disabled = true;
+        note.textContent = "";
+        try {
+          const response = await fetch("/api/join", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, email: email.value }),
+          });
+          const { outcome } = await response.json();
+          if (outcome === "joined" || outcome === "already") {
+            lead.textContent = outcome === "joined"
+              ? "You're on the list. Your invitation will arrive by email."
+              : "You're already on the list. Your invitation will arrive by email.";
+            form.hidden = true;
+            return;
+          }
+          if (outcome in CLOSED) return closed(CLOSED[outcome]);
+          note.textContent = "That didn't go through. Try again in a moment.";
+        } catch {
+          note.textContent = "That didn't go through. Try again in a moment.";
+        } finally {
+          submit.disabled = false;
+        }
+      });
+
+      if (!/^[0-9a-f]{16}$/.test(code)) closed(CLOSED.unknown);
+    </script>
+  </body>
+</html>
