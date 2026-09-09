@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Join Alma</title>
-    <meta name="description" content="Ask for access to Alma for the Mac.">
+    <meta name="description" content="Get access to Alma for the Mac.">
     <meta name="robots" content="noindex">
     <link rel="icon" href="/page/alma-app-icon.png" type="image/png">
     <style>
@@ -39,6 +39,7 @@
       img.mark { width: 44px; height: 44px; display: block; margin-bottom: 12px; }
       h1 { font-size: 19px; font-weight: 590; letter-spacing: -0.01em; margin: 0 0 4px; }
       #lead { color: var(--muted); margin: 0 0 16px; min-height: 42px; }
+      #lead strong { color: var(--ink); font-weight: 500; }
       form { display: flex; gap: 8px; flex-wrap: wrap; }
       input[type="email"] {
         flex: 1 1 11rem; height: 36px; padding: 0 12px; border-radius: 8px;
@@ -46,16 +47,18 @@
         font: inherit; color: var(--ink);
       }
       input[type="email"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(121, 96, 205, 0.25); }
-      button {
+      button, a.button {
+        display: inline-flex; align-items: center; justify-content: center;
         height: 36px; padding: 0 16px; border: 0; border-radius: 8px;
         background: var(--ink); color: #ffffff; font: inherit; font-weight: 500;
-        cursor: pointer;
+        text-decoration: none; cursor: pointer;
       }
       button[disabled] { opacity: 0.45; cursor: default; }
+      a[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
       .note { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; min-height: 19px; }
       @media (max-width: 480px) {
         main { padding: 18px 16px; }
-        button { flex: 1 1 auto; }
+        button, form, a.button { flex: 1 1 auto; }
       }
     </style>
   </head>
@@ -64,11 +67,14 @@
     <main>
       <img class="mark" alt="" src="/page/alma-app-icon.png" srcset="/page/alma-app-icon@2x.png 2x">
       <h1>Join Alma</h1>
-      <p id="lead">Leave your email and you're on the list. Invitations go out in waves.</p>
+      <p id="lead">Enter your email and get Alma for your Mac.</p>
       <form id="form">
         <input id="email" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
-        <button id="submit" type="submit">Join the list</button>
+        <button id="submit" type="submit">Continue</button>
       </form>
+      <div id="done" hidden>
+        <a id="download" class="button" href="#" aria-disabled="true">Get Alma</a>
+      </div>
       <p class="note" id="note"></p>
       <noscript><p class="note">This page needs JavaScript to sign you up.</p></noscript>
     </main>
@@ -80,6 +86,8 @@
       const form = document.getElementById("form");
       const email = document.getElementById("email");
       const submit = document.getElementById("submit");
+      const done = document.getElementById("done");
+      const download = document.getElementById("download");
 
       const CLOSED = {
         expired: "This link has expired. Ask whoever shared it for a fresh one.",
@@ -93,18 +101,32 @@
         note.textContent = "";
       }
 
-      function joined(kind) {
-        lead.textContent = kind === "already"
-          ? "You're already on the list."
-          : "You're on the list.";
-        note.textContent = "Your invitation will arrive at " + email.value.trim() + ".";
+      // Point the download at the build the update feed ships, served from
+      // this domain, then reveal it. Used for the already-has-access answer.
+      async function offerDownload(message) {
+        lead.textContent = message;
         form.hidden = true;
+        done.hidden = false;
+        try {
+          const response = await fetch("/appcast.xml", { cache: "no-store" });
+          const xml = await response.text();
+          const feed = new DOMParser().parseFromString(xml, "application/xml");
+          const stable = [...feed.querySelectorAll("item")].find(
+            (item) => !item.getElementsByTagName("sparkle:channel").length,
+          );
+          const enclosure = stable?.querySelector("enclosure")?.getAttribute("url");
+          if (!enclosure) throw new Error("no stable build");
+          download.href = "/download/" + new URL(enclosure).pathname.split("/").pop();
+          download.removeAttribute("aria-disabled");
+        } catch {
+          note.textContent = "The download isn't reachable right now. Refresh in a moment.";
+        }
       }
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         submit.disabled = true;
-        note.textContent = "Adding you…";
+        note.textContent = "Setting up your access…";
         try {
           const response = await fetch("/api/join", {
             method: "POST",
@@ -112,17 +134,28 @@
             body: JSON.stringify({ code, email: email.value }),
           });
           if (!response.ok) throw new Error(String(response.status));
-          const { outcome } = await response.json();
-          if (outcome === "joined" || outcome === "already") return joined(outcome);
-          if (outcome === "bad-email") {
-            note.textContent = "That doesn't read as an email address. Check it and try again.";
+          const result = await response.json();
+          if (result.outcome === "ready" && result.url) {
+            // The account is created and the download offered on the invite
+            // page the ticket lands on.
+            note.textContent = "Taking you to your download…";
+            window.location.href = result.url;
             return;
           }
-          if (outcome in CLOSED) return closed(CLOSED[outcome]);
+          if (result.outcome === "have-access") {
+            offerDownload("This email already has access.");
+            return;
+          }
+          if (result.outcome === "bad-email") {
+            note.textContent = "That doesn't read as an email address. Check it and try again.";
+            submit.disabled = false;
+            return;
+          }
+          if (result.outcome in CLOSED) return closed(CLOSED[result.outcome]);
           note.textContent = "That didn't go through. Try again in a moment.";
+          submit.disabled = false;
         } catch {
           note.textContent = "That didn't go through. Try again in a moment.";
-        } finally {
           submit.disabled = false;
         }
       });
