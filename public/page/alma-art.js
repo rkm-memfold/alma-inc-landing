@@ -13,7 +13,7 @@ let t=0,last=0,frame=0;
 function resize(){const r=canvas.getBoundingClientRect(),d=Math.min(devicePixelRatio,2);canvas.width=Math.round(r.width*d);canvas.height=Math.round(r.height*d);draw()}
 function draw(){
 if(!canvas.width||!reference.complete||!reference.naturalWidth)return;
-const light=true;
+const light=false;
 sample.fillStyle='#000';sample.fillRect(0,0,COLS,ROWS);
 sample.save();sample.scale(COLS/W,ROWS/H);sample.globalCompositeOperation='screen';
 for(const s of specimens){sample.save();sample.translate(s.x+Math.sin(t*.12+s.phase)*7,s.y+Math.sin(t*.19+s.phase)*9);sample.rotate(Math.sin(t*.18+s.phase)*.045);

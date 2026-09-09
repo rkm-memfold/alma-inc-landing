@@ -3,170 +3,61 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>You're invited to Alma</title>
+    <title>You'"'"'re invited to Alma</title>
     <meta name="description" content="Your invitation to Alma.">
     <meta name="robots" content="noindex">
     <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/client-logomark-dark.png">
-    <meta property="og:title" content="You're invited to Alma">
+    <meta property="og:title" content="You'"'"'re invited to Alma">
     <meta property="og:description" content="Accept your invitation and get Alma for your Mac.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://alma.inc/og-alma-wordmark.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <style>
-      :root {
-        color-scheme: light;
-        --ink: #0d0818;
-        --muted: rgba(13, 8, 24, 0.55);
-        --ground: #eeedf3;
-        --edge: rgba(13, 8, 24, 0.07);
-        --accent: #7960cd;
-      }
-      * { box-sizing: border-box; }
-      html, body { height: 100%; }
-      body {
-        margin: 0; min-height: 100dvh; display: grid; place-items: center;
-        background: var(--ground); color: var(--ink);
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-        font-size: 14px; line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-      }
-      canvas#ambient {
-        position: fixed; top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: max(100vw, 177.78vh); height: max(100vh, 56.25vw);
-        z-index: 0; pointer-events: none;
-      }
-      main {
-        position: relative; z-index: 1;
-        width: min(23rem, calc(100% - 40px));
-        padding: 18px; border-radius: 12px;
-        background: rgba(255, 255, 255, 0.9);
-        -webkit-backdrop-filter: blur(30px) saturate(1.6);
-        backdrop-filter: blur(30px) saturate(1.6);
-        border: 1px solid var(--edge);
-        box-shadow: 0 20px 48px rgba(13, 8, 24, 0.14);
-      }
-      img.mark { width: 34px; height: 34px; display: block; margin: 0 0 12px; }
-      h1 { font-size: 18px; font-weight: 590; letter-spacing: -0.01em; margin: 0 0 4px; }
-      #lead { color: var(--muted); margin: 0 0 14px; }
-      #lead strong { color: var(--ink); font-weight: 500; }
-      .row { display: flex; gap: 8px; flex-wrap: wrap; }
-      a.button {
-        display: inline-flex; align-items: center; justify-content: center;
-        height: 38px; padding: 0 18px; border-radius: 8px;
-        text-decoration: none; font-weight: 500;
-      }
-      a.primary { background: var(--ink); color: #ffffff; }
-      a.secondary { background: rgba(13, 8, 24, 0.06); color: var(--ink); }
-      a[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
-      .note { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; min-height: 36px; }
-      @media (max-width: 480px) {
-        main { padding: 16px; }
-        .row a.button { flex: 1 1 auto; }
-      }
-    </style>
+    <link rel="preload" as="image" href="/page/alma-art-ref.png">
+    <link rel="stylesheet" href="/page/alma-invite.css">
   </head>
   <body>
     <canvas id="ambient" aria-hidden="true"></canvas>
-    <main>
-      <img class="mark" alt="Alma" src="/client-logomark-dark.svg">
-      <h1>You're invited to Alma</h1>
-      <p id="lead">Setting up your account…</p>
-      <div class="row">
-        <a id="download" class="button primary" href="#" aria-disabled="true">Get Alma</a>
-        <a id="open" class="button secondary" href="ai.almaapp.helper://" hidden>Open Alma</a>
+    <main class="card" id="card" data-state="working">
+      <img class="mark" alt="Alma" src="/page/alma-app-icon.png" srcset="/page/alma-app-icon@2x.png 2x">
+
+      <div class="state" data-for="form">
+        <h1>Join Alma</h1>
+        <p class="sub">Enter your email to get Alma for your Mac.</p>
+        <form id="form">
+          <input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+          <p class="err" id="err"></p>
+          <button class="btn" id="submit" type="submit">Continue</button>
+        </form>
       </div>
-      <p class="note" id="note"></p>
-      <noscript><p class="note">This page needs JavaScript to accept your invitation.</p></noscript>
+
+      <div class="state" data-for="working">
+        <h1>Setting up your account</h1>
+        <p class="sub">
+          <svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>One moment.
+        </p>
+      </div>
+
+      <div class="state" data-for="ready">
+        <h1>You're in</h1>
+        <p class="sub" id="ready-sub"></p>
+        <a class="btn" id="download" href="#" aria-disabled="true">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download Alma
+        </a>
+        <button class="linkbtn" id="open" type="button" hidden>Already have Alma? Open it</button>
+      </div>
+
+      <div class="state" data-for="closed">
+        <h1 id="closed-title"></h1>
+        <p class="sub" id="closed-sub"></p>
+      </div>
+
+      <noscript><p class="sub">This page needs JavaScript to continue.</p></noscript>
     </main>
     <script src="/page/alma-art.js" defer></script>
-    <script
-      src="https://clerk.alma.inc/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
-      data-clerk-publishable-key="pk_live_Y2xlcmsuYWxtYS5pbmMk"></script>
-    <script>
-      const here = new URL(window.location.href);
-      const ticket = here.searchParams.get("__clerk_ticket");
-
-      const lead = document.getElementById("lead");
-      const note = document.getElementById("note");
-      const open = document.getElementById("open");
-      const download = document.getElementById("download");
-
-      function ready(email) {
-        lead.innerHTML = email
-          ? "Your account is ready: <strong>" + email + "</strong>"
-          : "Your account is ready.";
-        note.textContent = "Get Alma, open it, and sign in"
-          + (email ? " as " + email + "." : ".")
-          + " Already installed? Open Alma.";
-        open.hidden = false;
-      }
-
-      // The invitation is accepted right here, in the browser: the ticket
-      // creates the account with its email already verified, so the app's
-      // ordinary sign-in (Google, or an email code) simply works afterwards.
-      async function accept() {
-        if (!ticket) {
-          lead.textContent = "This link is missing its invitation. Open the one from your email, or ask for a fresh one.";
-          note.textContent = "You can still get Alma below; it will ask you to sign in.";
-          return;
-        }
-        if (typeof Clerk === "undefined") {
-          lead.textContent = "The sign-in service didn't load. Refresh in a moment.";
-          return;
-        }
-        try {
-          await Clerk.load();
-        } catch {
-          lead.textContent = "The sign-in service isn't reachable right now. Refresh in a moment.";
-          return;
-        }
-        if (Clerk.user) {
-          ready(Clerk.user.primaryEmailAddress?.emailAddress ?? "");
-          return;
-        }
-        try {
-          const attempt = await Clerk.client.signUp.create({ strategy: "ticket", ticket });
-          if (attempt.status === "complete") {
-            await Clerk.setActive({ session: attempt.createdSessionId });
-            ready(attempt.emailAddress ?? "");
-            return;
-          }
-          lead.textContent = "This invitation needs one more step with the account service. Refresh, or ask for a fresh link.";
-        } catch (refusal) {
-          const already = /already|taken|exists/i.test(String(refusal?.errors?.[0]?.code ?? refusal));
-          lead.textContent = already
-            ? "This invitation is already set up."
-            : "This invitation link has expired or was already used. Ask for a fresh one.";
-          if (already) {
-            note.textContent = "Get Alma and sign in with the email that was invited. Already installed? Open Alma.";
-            open.hidden = false;
-          }
-        }
-      }
-      accept();
-
-      // The build offered is the one the update feed ships, served from
-      // this domain, so an invited person installs what everyone runs.
-      fetch("/appcast.xml", { cache: "no-store" })
-        .then((response) => (response.ok ? response.text() : Promise.reject(response.status)))
-        .then((xml) => {
-          const feed = new DOMParser().parseFromString(xml, "application/xml");
-          const stable = [...feed.querySelectorAll("item")].find(
-            (item) => !item.getElementsByTagName("sparkle:channel").length,
-          );
-          const enclosure = stable?.querySelector("enclosure")?.getAttribute("url");
-          if (!enclosure) throw new Error("no stable build in the feed");
-          const file = new URL(enclosure).pathname.split("/").pop();
-          download.href = "/download/" + file;
-          download.removeAttribute("aria-disabled");
-        })
-        .catch(() => {
-          note.textContent = "The download isn't reachable right now. Refresh in a moment.";
-        });
-    </script>
+    <script src="https://clerk.alma.inc/npm/@clerk/clerk-js@5/dist/clerk.browser.js" data-clerk-publishable-key="pk_live_Y2xlcmsuYWxtYS5pbmMk" defer></script>
+    <script src="/page/alma-invite.js" defer></script>
   </body>
 </html>
