@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>You're invited to Alma</title>
+    <meta name="description" content="Your invitation to Alma, dictation for the Mac.">
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
+    <style>
+      @font-face {
+        font-family: "Miranda Sans";
+        src: url("/page/fonts/miranda-400.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Miranda Sans";
+        src: url("/page/fonts/miranda-500.ttf") format("truetype");
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+      }
+      :root { color-scheme: light; --ink: #0d0818; --muted: #5d5a66; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; min-height: 100vh; display: grid; place-items: center;
+        background: #f4f4f8 url("/page/bg-v2.jpg") center / cover no-repeat fixed;
+        color: var(--ink);
+        font-family: "Miranda Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        font-size: 16px; line-height: 1.55;
+      }
+      main {
+        width: min(26rem, 100% - 3rem); padding: 2.4rem 2.2rem; border-radius: 1.1rem;
+        background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(18px);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 18px 50px rgba(13, 8, 24, 0.12);
+      }
+      img.mark { width: 2.6rem; height: 2.6rem; display: block; margin-bottom: 1rem; }
+      h1 { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 0.4rem; }
+      p { color: var(--muted); margin: 0 0 1.3rem; }
+      .row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+      a.button {
+        display: inline-flex; align-items: center; justify-content: center; height: 2.4rem;
+        padding: 0 1.15rem; border-radius: 0.6rem; text-decoration: none; font-weight: 500;
+        font-size: 0.95rem;
+      }
+      a.primary { background: var(--ink); color: #ffffff; }
+      a.secondary { background: rgba(13, 8, 24, 0.06); color: var(--ink); }
+      a[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
+      .note { font-size: 0.85rem; color: var(--muted); margin: 1.4rem 0 0; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img class="mark" alt="" src="/client-logomark-dark.svg">
+      <h1>You're invited to Alma</h1>
+      <p id="lead">Dictation for your Mac that writes the way you do.</p>
+      <div class="row">
+        <a id="download" class="button primary" href="#" aria-disabled="true">Get Alma</a>
+        <a id="open" class="button secondary" href="#" aria-disabled="true">Open Alma</a>
+      </div>
+      <p class="note" id="note">Already installed? Open Alma and you're in.</p>
+    </main>
+    <script>
+      // Clerk lands here after the invitation is accepted, with the ticket in
+      // the query. Alma receives the same parameters through its URL scheme,
+      // which is what signs the invited address in.
+      const here = new URL(window.location.href);
+      const ticket = here.searchParams.get("__clerk_ticket");
+      const carried = ["__clerk_ticket", "__clerk_status"]
+        .map((name) => [name, here.searchParams.get(name)])
+        .filter(([, value]) => value);
+
+      const lead = document.getElementById("lead");
+      const note = document.getElementById("note");
+      const open = document.getElementById("open");
+      const download = document.getElementById("download");
+
+      const RESUMING = "alma.invite.downloaded";
+      const WAIT_FOR_ALMA = 2000;
+      let handedOff = false;
+
+      function armed() {
+        try { return sessionStorage.getItem(RESUMING) === ticket; } catch { return false; }
+      }
+      function arm(value) {
+        try {
+          if (value) sessionStorage.setItem(RESUMING, value);
+          else sessionStorage.removeItem(RESUMING);
+        } catch { /* private windows refuse storage; the buttons still work */ }
+      }
+
+      // Nothing can ask macOS whether an app is installed, so the answer is
+      // read from what happens: Alma opening takes the focus off this tab.
+      function handOff() {
+        if (handedOff || open.hasAttribute("aria-disabled")) return;
+        handedOff = true;
+        arm(null);
+        const waiting = lead.textContent;
+        const held = document.hasFocus();
+        lead.textContent = "Opening Alma…";
+        window.location.href = open.href;
+        window.setTimeout(() => {
+          if (held && !document.hasFocus()) return;
+          handedOff = false;
+          lead.textContent = waiting;
+          note.textContent = "Alma didn't open, so it's probably not on this Mac yet. Get it above.";
+        }, WAIT_FOR_ALMA);
+      }
+
+      if (ticket) {
+        const query = carried
+          .map(([name, value]) => name + "=" + encodeURIComponent(value))
+          .join("&");
+        open.href = "ai.almaapp.helper://invite?" + query;
+        open.removeAttribute("aria-disabled");
+
+        if (armed() || here.searchParams.get("__clerk_status") === "sign_in") {
+          handOff();
+        }
+        download.addEventListener("click", () => {
+          arm(ticket);
+          note.textContent = "Drag Alma into Applications and open it. Come back to this tab and it finishes on its own.";
+          window.addEventListener("focus", handOff);
+        });
+      } else {
+        lead.textContent = "This link is missing its invitation. Open the one from your email, or ask for a fresh one.";
+        note.textContent = "You can still get Alma below; it will ask you to sign in.";
+      }
+
+      // The build offered is the one the update feed ships, so an invited
+      // person installs exactly what everyone else runs.
+      fetch("/appcast.xml", { cache: "no-store" })
+        .then((response) => (response.ok ? response.text() : Promise.reject(response.status)))
+        .then((xml) => {
+          const feed = new DOMParser().parseFromString(xml, "application/xml");
+          const stable = [...feed.querySelectorAll("item")].find(
+            (item) => !item.getElementsByTagName("sparkle:channel").length,
+          );
+          const url = stable?.querySelector("enclosure")?.getAttribute("url");
+          if (!url) throw new Error("no stable build in the feed");
+          download.href = url;
+          download.removeAttribute("aria-disabled");
+          const floor = stable.getElementsByTagName("sparkle:minimumSystemVersion")[0]?.textContent;
+          if (floor) note.textContent += " Needs macOS " + floor + " or later.";
+        })
+        .catch(() => {
+          note.textContent = "The download isn't reachable right now. Refresh in a moment.";
+        });
+    </script>
+  </body>
+</html>
