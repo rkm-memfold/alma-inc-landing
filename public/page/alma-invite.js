@@ -129,6 +129,15 @@
     });
   }
 
+  const ambient = document.getElementById("ambient");
+  if (ambient) {
+    const art = new Image();
+    const reveal = () => ambient.classList.add("lit");
+    art.onload = reveal;
+    art.onerror = reveal;
+    art.src = "/page/alma-art-ref.png";
+  }
+
   const here = new URL(window.location.href);
   const ticket = here.searchParams.get("__clerk_ticket");
   if (ticket) {
