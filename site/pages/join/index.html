@@ -4,60 +4,75 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Join Alma</title>
-    <meta name="description" content="Get access to Alma for the Mac.">
+    <meta name="description" content="Get Alma for your Mac.">
     <meta name="robots" content="noindex">
-    <link rel="icon" href="/page/alma-app-icon.png" type="image/png">
+    <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/client-logomark-dark.png">
+    <meta property="og:title" content="Join Alma">
+    <meta property="og:description" content="Get Alma for your Mac.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://alma.inc/og-alma-wordmark.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
       :root {
         color-scheme: light;
         --ink: #0d0818;
         --muted: rgba(13, 8, 24, 0.55);
         --ground: #eeedf3;
-        --edge: rgba(13, 8, 24, 0.08);
+        --edge: rgba(13, 8, 24, 0.07);
         --accent: #7960cd;
       }
       * { box-sizing: border-box; }
       html, body { height: 100%; }
       body {
-        margin: 0; display: grid; place-items: center;
+        margin: 0; min-height: 100dvh; display: grid; place-items: center;
         background: var(--ground); color: var(--ink);
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
         font-size: 14px; line-height: 1.5;
         -webkit-font-smoothing: antialiased;
       }
-      canvas#ambient { position: fixed; inset: 0; z-index: 0; }
+      /* Your renderer, mounted full-bleed with cover so its 16:9 field fills
+         the viewport and keeps its aspect on any screen. */
+      canvas#ambient {
+        position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: max(100vw, 177.78vh); height: max(100vh, 56.25vw);
+        z-index: 0; pointer-events: none;
+      }
       main {
         position: relative; z-index: 1;
-        width: min(24.5rem, calc(100% - 48px));
-        padding: 24px; border-radius: 12px;
-        background: rgba(255, 255, 255, 0.66);
-        -webkit-backdrop-filter: blur(28px) saturate(1.15);
-        backdrop-filter: blur(28px) saturate(1.15);
+        width: min(23rem, calc(100% - 40px));
+        padding: 18px; border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        -webkit-backdrop-filter: blur(30px) saturate(1.6);
+        backdrop-filter: blur(30px) saturate(1.6);
         border: 1px solid var(--edge);
-        box-shadow: 0 16px 40px rgba(13, 8, 24, 0.1);
+        box-shadow: 0 20px 48px rgba(13, 8, 24, 0.14);
       }
-      img.mark { width: 44px; height: 44px; display: block; margin-bottom: 12px; }
-      h1 { font-size: 19px; font-weight: 590; letter-spacing: -0.01em; margin: 0 0 4px; }
-      #lead { color: var(--muted); margin: 0 0 16px; min-height: 42px; }
+      img.mark { width: 34px; height: 34px; display: block; margin: 0 0 12px; }
+      h1 { font-size: 18px; font-weight: 590; letter-spacing: -0.01em; margin: 0 0 4px; }
+      #lead { color: var(--muted); margin: 0 0 14px; }
       #lead strong { color: var(--ink); font-weight: 500; }
       form { display: flex; gap: 8px; flex-wrap: wrap; }
       input[type="email"] {
-        flex: 1 1 11rem; height: 36px; padding: 0 12px; border-radius: 8px;
-        border: 1px solid var(--edge); background: rgba(255, 255, 255, 0.85);
+        flex: 1 1 11rem; height: 38px; padding: 0 12px; border-radius: 8px;
+        border: 1px solid var(--edge); background: rgba(255, 255, 255, 0.9);
         font: inherit; color: var(--ink);
       }
       input[type="email"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(121, 96, 205, 0.25); }
       button, a.button {
         display: inline-flex; align-items: center; justify-content: center;
-        height: 36px; padding: 0 16px; border: 0; border-radius: 8px;
+        height: 38px; padding: 0 18px; border: 0; border-radius: 8px;
         background: var(--ink); color: #ffffff; font: inherit; font-weight: 500;
         text-decoration: none; cursor: pointer;
       }
       button[disabled] { opacity: 0.45; cursor: default; }
       a[aria-disabled="true"] { opacity: 0.45; pointer-events: none; }
-      .note { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; min-height: 19px; }
+      .note { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; min-height: 18px; }
       @media (max-width: 480px) {
-        main { padding: 18px 16px; }
+        main { padding: 16px; }
         button, form, a.button { flex: 1 1 auto; }
       }
     </style>
@@ -65,7 +80,7 @@
   <body>
     <canvas id="ambient" aria-hidden="true"></canvas>
     <main>
-      <img class="mark" alt="" src="/page/alma-app-icon.png" srcset="/page/alma-app-icon@2x.png 2x">
+      <img class="mark" alt="Alma" src="/client-logomark-dark.svg">
       <h1>Join Alma</h1>
       <p id="lead">Enter your email and get Alma for your Mac.</p>
       <form id="form">
@@ -78,7 +93,7 @@
       <p class="note" id="note"></p>
       <noscript><p class="note">This page needs JavaScript to sign you up.</p></noscript>
     </main>
-    <script src="/page/alma-ambient.js" defer></script>
+    <script src="/page/alma-art.js" defer></script>
     <script>
       const code = window.location.pathname.split("/").filter(Boolean).pop() ?? "";
       const lead = document.getElementById("lead");
@@ -136,8 +151,6 @@
           if (!response.ok) throw new Error(String(response.status));
           const result = await response.json();
           if (result.outcome === "ready" && result.url) {
-            // The account is created and the download offered on the invite
-            // page the ticket lands on.
             note.textContent = "Taking you to your download…";
             window.location.href = result.url;
             return;
