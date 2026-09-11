@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <title>Paint</title>
+  <defs>
+    <linearGradient id="pl" x1="52" y1="40" x2="196" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#f4f6fa"/>
+      <stop offset="1" stop-color="#d3dae5"/>
+    </linearGradient>
+    <linearGradient id="pe" x1="70" y1="34" x2="180" y2="222" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#a9b5c6"/>
+    </linearGradient>
+    <radialGradient id="hole" cx="50%" cy="34%" r="72%">
+      <stop offset="0" stop-color="#2c3644"/>
+      <stop offset="1" stop-color="#0d1219"/>
+    </radialGradient>
+    <linearGradient id="handle" x1="150" y1="196" x2="226" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4b93ea"/>
+      <stop offset="0.5" stop-color="#2f6fd0"/>
+      <stop offset="1" stop-color="#1c4b9e"/>
+    </linearGradient>
+    <linearGradient id="ferrule" x1="126" y1="186" x2="166" y2="146" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fbfdff"/>
+      <stop offset="0.45" stop-color="#cdd6e2"/>
+      <stop offset="1" stop-color="#8f9dae"/>
+    </linearGradient>
+    <linearGradient id="tip" x1="102" y1="212" x2="140" y2="172" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e8452c"/>
+      <stop offset="1" stop-color="#ff8a4a"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#101a2a" flood-opacity="0.34"/>
+    </filter>
+    <filter id="tight" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="-2" dy="4" stdDeviation="4" flood-color="#101a2a" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- palette -->
+  <g filter="url(#soft)">
+    <path fill="url(#pl)" stroke="url(#pe)" stroke-width="2.5"
+      d="M126 24
+         C 188 24 234 63 234 113
+         C 234 147 212 165 187 171
+         C 168 175 157 184 153 199
+         C 147 220 130 233 106 233
+         C 58 233 20 189 20 132
+         C 20 70 68 24 126 24 Z"/>
+    <ellipse cx="88" cy="166" rx="25" ry="22" fill="url(#hole)"/>
+    <ellipse cx="88" cy="163" rx="25" ry="22" fill="#0b0f16" fill-opacity="0.5"/>
+    <path d="M67 155a25 22 0 0 1 42-6" fill="none" stroke="#ffffff" stroke-opacity="0.28" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- paint wells, evenly set round the upper arc -->
+  <g>
+    <circle cx="74" cy="86" r="17" fill="#e8443c"/>
+    <circle cx="122" cy="60" r="17" fill="#f5b52a"/>
+    <circle cx="174" cy="80" r="17" fill="#2aa84a"/>
+    <circle cx="46" cy="132" r="17" fill="#2f6fe0"/>
+    <circle cx="150" cy="116" r="15" fill="#8a4fd6"/>
+    <g fill="#0b1220" fill-opacity="0.16">
+      <circle cx="74" cy="86" r="17"/>
+      <circle cx="122" cy="60" r="17"/>
+      <circle cx="174" cy="80" r="17"/>
+      <circle cx="46" cy="132" r="17"/>
+      <circle cx="150" cy="116" r="15"/>
+    </g>
+    <g fill="#ffffff" fill-opacity="0.3">
+      <ellipse cx="70" cy="80" rx="7" ry="5"/>
+      <ellipse cx="118" cy="54" rx="7" ry="5"/>
+      <ellipse cx="170" cy="74" rx="7" ry="5"/>
+      <ellipse cx="42" cy="126" rx="7" ry="5"/>
+      <ellipse cx="146" cy="110" rx="6" ry="4.5"/>
+    </g>
+  </g>
+
+  <!-- brush, laid across the lower right so no well is hidden -->
+  <g filter="url(#tight)">
+    <path fill="url(#handle)"
+      d="M231 79c8 8 8 20 0 28l-58 58-28-28 58-58c8-8 20-8 28 0Z"/>
+    <path fill="#ffffff" fill-opacity="0.26"
+      d="M224 84c3 3 3 8 0 11l-53 53-6-6 53-53c3-3 3-8 6-5Z"/>
+    <path fill="url(#ferrule)" d="M145 137l28 28-23 23-28-28Z"/>
+    <path fill="#7f8ea3" fill-opacity="0.45" d="M135 147l28 28-4 4-28-28Z"/>
+    <path fill="url(#tip)"
+      d="M122 160l28 28-16 16c-10 10-24 12-32 5-7-6-6-18 2-29 5-7 11-14 18-20Z"/>
+    <path fill="#ffffff" fill-opacity="0.22" d="M126 167l17 17-7 7-17-17Z"/>
+  </g>
+</svg>

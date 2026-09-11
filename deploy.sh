@@ -43,7 +43,13 @@ echo "==> deploying $(git rev-parse --short HEAD) to ${HOST}:${WEBROOT}"
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
-python3 scripts/build_site.py --output "$STAGE"
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is required to build the site (Astro); install Node 20 or newer" >&2
+  exit 1
+fi
+
+npm ci --omit=dev --silent
+ASTRO_OUT_DIR="$STAGE" npx astro build
 
 FILES=()
 while IFS= read -r -d '' f; do

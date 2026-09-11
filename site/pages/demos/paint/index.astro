@@ -1,0 +1,44 @@
+---
+import Base from "../../../layouts/Base.astro";
+import DesktopHead from "../../../components/DesktopHead.astro";
+import Desktop from "../../../components/Desktop.astro";
+import Schema from "../../../components/Schema.astro";
+---
+
+<Base lang="en">
+  <Fragment slot="head">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+    <meta name="description" content="Alma drives MS Paint by voice, picking up the brush, the palette and the fill tool, the same surface a person would use.">
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+    <meta name="theme-color" content="#0B0111">
+    <link rel="canonical" href="https://alma.inc/demos/paint/">
+    <link rel="alternate" type="text/plain" href="https://alma.inc/llms.txt" title="Alma, for language models">
+
+    <meta property="og:title" content="Paint demo - Alma paints in MS Paint by voice">
+    <meta property="og:description" content="Alma paints in MS Paint by voice. Voice-driven computer use, recorded uncut.">
+    <meta property="og:type" content="video.other">
+    <meta property="og:url" content="https://alma.inc/demos/paint/">
+    <meta property="og:site_name" content="Alma">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://alma.inc/page/desktop/demos/paint-poster.jpg">
+    <meta property="og:image:secure_url" content="https://alma.inc/page/desktop/demos/paint-poster.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="960">
+    <meta property="og:image:height" content="540">
+    <meta property="og:image:alt" content="Alma, an AI-native computer interface">
+
+    <meta name="twitter:card" content="player">
+    <meta name="twitter:site" content="@alma_inc">
+    <meta name="twitter:title" content="Paint demo - Alma paints in MS Paint by voice">
+    <meta name="twitter:description" content="Alma paints in MS Paint by voice. Voice-driven computer use, recorded uncut.">
+    <meta name="twitter:image" content="https://alma.inc/page/desktop/demos/paint-poster.jpg">
+    <meta name="twitter:image:alt" content="Alma, an AI-native computer interface">
+
+    <title>Paint demo - Alma paints in MS Paint by voice</title>
+    <DesktopHead />
+    <Schema page="paint" />
+  </Fragment>
+
+  <Desktop open="paint" />
+</Base>

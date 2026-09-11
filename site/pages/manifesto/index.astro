@@ -1,0 +1,44 @@
+---
+import Base from "../../layouts/Base.astro";
+import DesktopHead from "../../components/DesktopHead.astro";
+import Desktop from "../../components/Desktop.astro";
+import Schema from "../../components/Schema.astro";
+---
+
+<Base lang="en">
+  <Fragment slot="head">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+    <meta name="description" content="The desktop metaphor stopped evolving forty years ago. Alma's manifesto: intent is the primitive, context is the whole thing, and you stay in control.">
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+    <meta name="theme-color" content="#0B0111">
+    <link rel="canonical" href="https://alma.inc/manifesto/">
+    <link rel="alternate" type="text/plain" href="https://alma.inc/llms.txt" title="Alma, for language models">
+
+    <meta property="og:title" content="Manifesto - Why the computer interface has to change">
+    <meta property="og:description" content="Intent is the primitive, not the app. Alma's manifesto on what the next computer interface has to be.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://alma.inc/manifesto/">
+    <meta property="og:site_name" content="Alma">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="https://alma.inc/og-alma-wordmark.png">
+    <meta property="og:image:secure_url" content="https://alma.inc/og-alma-wordmark.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Alma, an AI-native computer interface">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@alma_inc">
+    <meta name="twitter:title" content="Manifesto - Why the computer interface has to change">
+    <meta name="twitter:description" content="Intent is the primitive, not the app. Alma's manifesto on what the next computer interface has to be.">
+    <meta name="twitter:image" content="https://alma.inc/og-alma-wordmark.png">
+    <meta name="twitter:image:alt" content="Alma, an AI-native computer interface">
+
+    <title>Manifesto - Why the computer interface has to change</title>
+    <DesktopHead />
+    <Schema page="manifesto" />
+  </Fragment>
+
+  <Desktop open="manifesto" />
+</Base>

@@ -1,16 +1,28 @@
+---
+import { posthogProjectToken } from "../lib/posthog.mjs";
+
+interface Props {
+  lang?: string;
+  bodyClass?: string;
+}
+
+const { lang = "en", bodyClass } = Astro.props;
+const posthogToken = posthogProjectToken();
+---
+
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang={lang}>
   <head>
     <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    <script is:inline>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-T9SDSZMJ');</script>
     <!-- End Google Tag Manager -->
-    <script>
+    <script is:inline define:vars={{ posthogProjectToken: posthogToken }}>
       (() => {
-        const projectToken = "{{ posthog_project_token }}";
+        const projectToken = posthogProjectToken;
         const apiHost = "https://us.i.posthog.com";
         const isProduction = ["alma.inc", "www.alma.inc"].includes(window.location.hostname);
 
@@ -100,13 +112,13 @@
         syncAnalyticsConsent();
       })();
     </script>
-{{ head }}
+    <slot name="head" />
   </head>
-  <body{{ body_attributes }}>
+  <body class={bodyClass}>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T9SDSZMJ"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-{{ body }}
+    <slot />
   </body>
 </html>

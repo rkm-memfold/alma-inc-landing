@@ -1,0 +1,2264 @@
+---
+// The macOS desktop, shared by every route.
+//
+// `open` is the window this URL represents; it is marked server-side so the
+// right one is showing before any JavaScript runs, and so a crawler with no
+// JavaScript sees only this page's content rather than all of it at once.
+interface Props {
+  open?: string;
+}
+
+import { WINDOW_HTML } from "../content/windows.mjs";
+import Wallpaper from "./Wallpaper.astro";
+
+const { open = "welcome" } = Astro.props;
+
+// Each page needs exactly one h1. Welcome, Manifesto and Join Us carry a
+// heading inside the window body, so theirs stays a plain title bar; for the
+// four that do not, the title bar is the page's heading when it is the route.
+const DemosTitle = open === "demos" ? "h1" : "div";
+const SocialsTitle = open === "socials" ? "h1" : "div";
+const BlenderTitle = open === "blender" ? "h1" : "div";
+const PaintTitle = open === "paint" ? "h1" : "div";
+---
+
+    <Wallpaper />
+    <script is:inline>
+      (() => {
+        const reveal = () => document.body.classList.add("is-ready");
+        // The wallpaper is an inline SVG now, and load on an SVG <image> is not
+        // dependable across browsers. Racing the same URL resolves out of cache
+        // the moment the real one lands, which is the event we actually wanted.
+        const plate = new Image();
+        plate.addEventListener("load", reveal, { once: true });
+        plate.addEventListener("error", reveal, { once: true });
+        plate.src = "/page/desktop/wallpaper.jpg";
+        if (plate.complete) reveal();
+        window.setTimeout(reveal, 4000);
+      })();
+    </script>
+
+    <!-- ============================================================ -->
+    <!-- Menu bar                                                      -->
+    <!-- ============================================================ -->
+    <header class="menubar">
+      <div class="menubar-left">
+        <button class="menu-title is-mark" type="button" data-menu="apple" aria-label="Alma menu" aria-haspopup="true" aria-expanded="false">
+          <img src="/page/desktop/icons/menu-alma.png" alt="" width="96" height="96" fetchpriority="high">
+        </button>
+        <button class="menu-title is-app" type="button" data-menu="alma" aria-haspopup="true" aria-expanded="false">Alma</button>
+        <button class="menu-title is-secondary" type="button" data-menu="file" aria-haspopup="true" aria-expanded="false">File</button>
+        <button class="menu-title is-secondary" type="button" data-menu="view" aria-haspopup="true" aria-expanded="false">View</button>
+        <button class="menu-title is-secondary" type="button" data-menu="window" aria-haspopup="true" aria-expanded="false">Window</button>
+        <button class="menu-title is-secondary" type="button" data-menu="help" aria-haspopup="true" aria-expanded="false">Help</button>
+      </div>
+
+      <div class="menubar-right">
+        <button class="menubar-extra is-alma" type="button" data-menu="status" title="Alma" aria-label="Alma" aria-haspopup="true" aria-expanded="false">
+          <img src="/page/desktop/icons/menu-alma.png" alt="" width="96" height="96" style="height: 16px">
+        </button>
+        <button class="menubar-extra" type="button" data-menu="wifi" title="Wi-Fi" aria-label="Wi-Fi" aria-haspopup="true" aria-expanded="false">
+          <img src="/page/desktop/icons/menu-wifi.png" alt="" width="64" height="46" style="height: 15px">
+        </button>
+        <span class="menubar-extra" aria-hidden="true" title="Battery">
+          <img src="/page/desktop/icons/menu-battery.png" alt="" width="96" height="46" style="height: 13px">
+        </span>
+        <button class="menubar-extra" type="button" id="prompt-trigger" title="Ask Alma" aria-label="Ask Alma">
+          <img src="/page/desktop/icons/menu-search.png" alt="" width="64" height="60" style="height: 16px">
+        </button>
+        <span class="menubar-extra" aria-hidden="true" title="Control Centre">
+          <img src="/page/desktop/icons/menu-control.png" alt="" width="64" height="58" style="height: 16px">
+        </span>
+        <span class="menubar-clock"><span class="clock-date"></span> <span class="clock-time"></span></span>
+      </div>
+    </header>
+
+    <!-- Pull-down menus -->
+    <div class="menu-panel glass" id="menu-apple" role="menu">
+      <a href="/" data-open="welcome" role="menuitem">About Alma</a>
+      <div class="menu-sep"></div>
+      <a href="/manifesto/" data-open="manifesto" role="menuitem">Manifesto</a>
+      <a href="/demos/" data-open="demos" role="menuitem">Demos<kbd>&#8984;G</kbd></a>
+      <div class="menu-sep"></div>
+      <a href="/join-us/" data-open="joinus" role="menuitem">Join us&#8230;</a>
+    </div>
+
+    <div class="menu-panel glass" id="menu-alma" role="menu">
+      <a href="/" data-open="welcome" role="menuitem">About Alma</a>
+      <div class="menu-sep"></div>
+      <a href="/manifesto/" data-open="manifesto" role="menuitem">Manifesto</a>
+      <a href="/join-us/" data-open="joinus" role="menuitem">Join us&#8230;</a>
+      <div class="menu-sep"></div>
+      <a href="/privacy/" role="menuitem">Privacy Policy</a>
+      <a href="/terms/" role="menuitem">Terms of Service</a>
+    </div>
+
+    <div class="menu-panel glass" id="menu-file" role="menu">
+      <a href="/demos/" data-open="demos" role="menuitem">Open Demos<kbd>&#8984;G</kbd></a>
+      <a href="/demos/blender/" data-open="blender" role="menuitem">Open Blender demo</a>
+      <a href="/demos/paint/" data-open="paint" role="menuitem">Open Paint demo</a>
+      <div class="menu-sep"></div>
+      <button type="button" data-action="close-all" role="menuitem">Close Window<kbd>&#8984;W</kbd></button>
+    </div>
+
+    <div class="menu-panel glass" id="menu-view" role="menu">
+      <a href="/demos/" data-open="demos" role="menuitem">as Icons</a>
+      <button type="button" disabled role="menuitem">as List</button>
+      <button type="button" disabled role="menuitem">as Columns</button>
+      <div class="menu-sep"></div>
+      <button type="button" data-action="close-all" role="menuitem">Show Desktop</button>
+    </div>
+
+    <div class="menu-panel glass" id="menu-window" role="menu">
+      <button type="button" data-action="minimise" role="menuitem">Minimise<kbd>&#8984;M</kbd></button>
+      <button type="button" data-action="close-all" role="menuitem">Close<kbd>&#8984;W</kbd></button>
+      <div class="menu-sep"></div>
+      <a href="/" data-open="welcome" role="menuitem">Alma</a>
+      <a href="/demos/" data-open="demos" role="menuitem">Demos</a>
+    </div>
+
+    <div class="menu-panel glass" id="menu-help" role="menu">
+      <a href="/manifesto/" data-open="manifesto" role="menuitem">What is Alma?</a>
+      <a href="/demos/" data-open="demos" role="menuitem">Watch a demo</a>
+      <div class="menu-sep"></div>
+      <a href="/privacy/" role="menuitem">Privacy Policy</a>
+      <a href="/terms/" role="menuitem">Terms of Service</a>
+      <div class="menu-sep"></div>
+      <a href="/join-us/" data-open="joinus" role="menuitem">Contact us</a>
+    </div>
+
+    <div class="menu-panel glass" id="menu-status" role="menu">
+      <div class="menu-head">Alma is running</div>
+      <button type="button" data-action="ask" role="menuitem">Ask Alma&#8230;<kbd>&#8984;K</kbd></button>
+      <a href="/demos/" data-open="demos" role="menuitem">Watch a demo</a>
+      <div class="menu-sep"></div>
+      <a href="/" data-open="welcome" role="menuitem">About Alma</a>
+      <a href="/join-us/" data-open="joinus" role="menuitem">Join us&#8230;</a>
+    </div>
+
+    <div class="menu-panel glass is-wifi" id="menu-wifi" role="menu">
+      <div class="menu-head">Wi-Fi</div>
+      <button type="button" class="wifi-network" role="menuitem">
+        <svg class="wifi-tick" viewBox="0 0 16 16" aria-hidden="true"><path d="M6.2 11.6 3.1 8.5a.95.95 0 0 1 1.35-1.35l1.75 1.75 5.35-5.35A.95.95 0 0 1 12.9 4.9l-6.7 6.7Z"/></svg>
+        <span class="wifi-name">Alma HQ</span>
+        <img class="wifi-bars" src="/page/desktop/icons/menu-wifi.png" alt="" width="64" height="46">
+      </button>
+      <div class="menu-sep"></div>
+      <div class="menu-foot">Connected to Alma HQ</div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Desktop                                                       -->
+    <!-- ============================================================ -->
+    <main class="machine">
+      <div class="desktop" id="desktop">
+        <div class="desktop-icons" role="group" aria-label="Desktop items">
+          <a href="/demos/" class="icon is-demo" data-open="demos">
+            <span class="icon-art"><img src="/page/desktop/icons/folder.png" alt="" width="192" height="192" fetchpriority="high"></span>
+            <span class="icon-label">Demos</span>
+          </a>
+
+          <a href="/manifesto/" class="icon" data-open="manifesto">
+            <span class="icon-art"><img src="/page/desktop/icons/folder.png" alt="" width="192" height="192" decoding="async"></span>
+            <span class="icon-label">Manifesto</span>
+          </a>
+
+          <button class="icon" type="button" data-alert="comingsoon">
+            <span class="icon-art"><img src="/page/desktop/icons/alma.png" alt="" width="192" height="192" decoding="async"></span>
+            <span class="icon-label">Alma</span>
+          </button>
+
+          <a href="/join-us/" class="icon" data-open="joinus">
+            <span class="icon-art"><img src="/page/desktop/icons/joinus.svg" alt="" width="192" height="192" decoding="async"></span>
+            <span class="icon-label">Join Us</span>
+          </a>
+
+          <a href="/socials/" class="icon" data-open="socials">
+            <span class="icon-art"><img src="/page/desktop/icons/folder.png" alt="" width="192" height="192" decoding="async"></span>
+            <span class="icon-label">Socials</span>
+          </a>
+
+
+
+        </div>
+      </div>
+
+      <!-- ========================================================== -->
+      <!-- Windows                                                     -->
+      <!-- ========================================================== -->
+      <div class="window-layer" id="window-layer">
+
+        <!-- Welcome / waitlist ---------------------------------------- -->
+        <section class={`window glass is-welcome ${open === "welcome" ? "is-route" : ""}`} id="win-welcome" data-fit="content" data-window="welcome" data-w="600" data-h="540" aria-label="About Alma">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <div class="window-title">Alma</div>
+          </div>
+          <div class="window-body">
+            <div class="window-scroll" data-window-content="welcome">{open === "welcome" && <Fragment set:html={WINDOW_HTML.welcome} />}</div>
+          </div>
+        </section>
+
+        <!-- Demos ----------------------------------------------------- -->
+        <section class={`window glass has-toolbar ${open === "demos" ? "is-route" : ""}`} id="win-demos" data-window="demos" data-w="780" data-h="520" aria-label="Demos">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <DemosTitle class="window-title"><img src="/page/desktop/icons/folder.png" alt="">Demos</DemosTitle>
+          </div>
+          <div class="window-body">
+            <nav class="finder-sidebar" aria-label="Places">
+              <div class="sidebar-heading">Favourites</div>
+              <a href="/demos/" class="sidebar-item is-current" data-open="demos"><img src="/page/desktop/icons/folder.png" alt="">Demos</a>
+              <a href="/manifesto/" class="sidebar-item" data-open="manifesto"><img src="/page/desktop/icons/folder.png" alt="">Manifesto</a>
+              <a href="/socials/" class="sidebar-item" data-open="socials"><img src="/page/desktop/icons/folder.png" alt="">Socials</a>
+              <div class="sidebar-heading">Alma</div>
+              <a href="/join-us/" class="sidebar-item" data-open="joinus"><img src="/page/desktop/icons/joinus.svg" alt="">Join Us</a>
+            </nav>
+            <div class="window-scroll" data-window-content="demos">{open === "demos" && <Fragment set:html={WINDOW_HTML.demos} />}</div>
+          </div>
+          <div class="finder-statusbar">2 items. Unedited recordings, real machine, real apps</div>
+        </section>
+
+        <!-- Socials --------------------------------------------------- -->
+        <section class={`window glass has-toolbar ${open === "socials" ? "is-route" : ""}`} id="win-socials" data-fit="content" data-window="socials" data-w="620" data-h="380" aria-label="Socials">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <SocialsTitle class="window-title"><img src="/page/desktop/icons/folder.png" alt="">Socials</SocialsTitle>
+          </div>
+          <div class="window-body">
+            <div class="window-scroll" data-window-content="socials">{open === "socials" && <Fragment set:html={WINDOW_HTML.socials} />}</div>
+          </div>
+          <div class="finder-statusbar">3 items</div>
+        </section>
+
+        <!-- Blender demo ---------------------------------------------- -->
+        <section class={`window glass is-media ${open === "blender" ? "is-route" : ""}`} id="win-blender" data-window="blender" data-w="880" data-h="580" aria-label="Blender demo">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <BlenderTitle class="window-title"><img src="/page/desktop/icons/blender.svg" alt="">Blender demo</BlenderTitle>
+          </div>
+          <div class="window-body">
+            <div class="media-stage" data-media>
+              <video
+                playsinline
+                preload="none"
+                data-poster="/page/desktop/demos/blender-poster.jpg"
+                data-src="/page/desktop/demos/blender.mp4"
+                data-src-sm="/page/desktop/demos/blender-sm.mp4"
+                data-demo="blender"></video>
+              <button class="media-bigplay" type="button" data-media-toggle aria-label="Play">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg>
+              </button>
+              <div class="media-controls glass">
+                <button class="media-button" type="button" data-media-toggle aria-label="Play">
+                  <svg class="glyph-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg>
+                  <svg class="glyph-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>
+                </button>
+                <span class="media-time" data-media-elapsed>0:00</span>
+                <div class="media-scrub" data-media-scrub role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="media-scrub-track"><span class="media-scrub-fill" data-media-fill></span></span>
+                  <span class="media-scrub-knob" data-media-knob></span>
+                </div>
+                <span class="media-time is-remaining" data-media-remaining>0:00</span>
+                <button class="media-button" type="button" data-media-mute aria-label="Unmute">
+                  <svg class="glyph-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.5 4.2 6.9 8H3.6A1.6 1.6 0 0 0 2 9.6v4.8A1.6 1.6 0 0 0 3.6 16h3.3l4.6 3.8a.9.9 0 0 0 1.5-.7V4.9a.9.9 0 0 0-1.5-.7zM21.3 9.3a.9.9 0 0 0-1.3 0L18 11.3l-2-2a.9.9 0 1 0-1.3 1.3l2 2-2 2a.9.9 0 1 0 1.3 1.3l2-2 2 2a.9.9 0 0 0 1.3-1.3l-2-2 2-2a.9.9 0 0 0 0-1.3z"/></svg>
+                  <svg class="glyph-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.5 4.2 6.9 8H3.6A1.6 1.6 0 0 0 2 9.6v4.8A1.6 1.6 0 0 0 3.6 16h3.3l4.6 3.8a.9.9 0 0 0 1.5-.7V4.9a.9.9 0 0 0-1.5-.7zM16 8.6a.9.9 0 0 0-1.1 1.4 2.6 2.6 0 0 1 0 4 .9.9 0 0 0 1.1 1.4 4.4 4.4 0 0 0 0-6.8zM18.5 5.6a.9.9 0 0 0-1 1.5 6.3 6.3 0 0 1 0 9.8.9.9 0 1 0 1 1.5 8.1 8.1 0 0 0 0-12.8z"/></svg>
+                </button>
+                <a class="media-button" href="https://x.com/rahulxkm/status/2096182164501188886" target="_blank" rel="noopener noreferrer" aria-label="Watch on X">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 10.6 20.4 3h-1.6l-5.8 6.6L8.4 3H3l6.9 10-6.9 8h1.6l6.1-7 4.8 7H21l-7.2-10.4Zm-2.2 2.5-.7-1L5.1 4.2h2.4l4.5 6.5.7 1 5.9 8.4h-2.4l-4.7-6.9Z"/></svg>
+                </a>
+              </div>
+              <div class="media-fallback">
+                <img src="/page/desktop/icons/blender.svg" alt="">
+                <p class="media-fallback-title">This recording will not load.</p>
+                <p>Watch it on <a href="https://x.com/rahulxkm/status/2096182164501188886" target="_blank" rel="noopener noreferrer">X</a> instead.</p>
+              </div>
+            </div>
+          </div>
+          <div class="media-caption" data-window-content="blender">{open === "blender" && <Fragment set:html={WINDOW_HTML.blender} />}</div>
+        </section>
+
+        <!-- Paint demo ------------------------------------------------ -->
+        <section class={`window is-media ${open === "paint" ? "is-route" : ""}`} id="win-paint" data-window="paint" data-w="880" data-h="580" aria-label="Paint demo">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <PaintTitle class="window-title"><img src="/page/desktop/icons/paint.svg" alt="">Paint demo</PaintTitle>
+          </div>
+          <div class="window-body">
+            <div class="media-stage" data-media>
+              <video
+                playsinline
+                preload="none"
+                data-poster="/page/desktop/demos/paint-poster.jpg"
+                data-src="/page/desktop/demos/paint.mp4"
+                data-src-sm="/page/desktop/demos/paint-sm.mp4"
+                data-demo="paint"></video>
+              <button class="media-bigplay" type="button" data-media-toggle aria-label="Play">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg>
+              </button>
+              <div class="media-controls glass">
+                <button class="media-button" type="button" data-media-toggle aria-label="Play">
+                  <svg class="glyph-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.2v13.6L19 12z"/></svg>
+                  <svg class="glyph-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>
+                </button>
+                <span class="media-time" data-media-elapsed>0:00</span>
+                <div class="media-scrub" data-media-scrub role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <span class="media-scrub-track"><span class="media-scrub-fill" data-media-fill></span></span>
+                  <span class="media-scrub-knob" data-media-knob></span>
+                </div>
+                <span class="media-time is-remaining" data-media-remaining>0:00</span>
+                <button class="media-button" type="button" data-media-mute aria-label="Unmute">
+                  <svg class="glyph-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.5 4.2 6.9 8H3.6A1.6 1.6 0 0 0 2 9.6v4.8A1.6 1.6 0 0 0 3.6 16h3.3l4.6 3.8a.9.9 0 0 0 1.5-.7V4.9a.9.9 0 0 0-1.5-.7zM21.3 9.3a.9.9 0 0 0-1.3 0L18 11.3l-2-2a.9.9 0 1 0-1.3 1.3l2 2-2 2a.9.9 0 1 0 1.3 1.3l2-2 2 2a.9.9 0 0 0 1.3-1.3l-2-2 2-2a.9.9 0 0 0 0-1.3z"/></svg>
+                  <svg class="glyph-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.5 4.2 6.9 8H3.6A1.6 1.6 0 0 0 2 9.6v4.8A1.6 1.6 0 0 0 3.6 16h3.3l4.6 3.8a.9.9 0 0 0 1.5-.7V4.9a.9.9 0 0 0-1.5-.7zM16 8.6a.9.9 0 0 0-1.1 1.4 2.6 2.6 0 0 1 0 4 .9.9 0 0 0 1.1 1.4 4.4 4.4 0 0 0 0-6.8zM18.5 5.6a.9.9 0 0 0-1 1.5 6.3 6.3 0 0 1 0 9.8.9.9 0 1 0 1 1.5 8.1 8.1 0 0 0 0-12.8z"/></svg>
+                </button>
+                <a class="media-button" href="https://x.com/tiramisurabhi/status/2092165148140360064" target="_blank" rel="noopener noreferrer" aria-label="Watch on X">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 10.6 20.4 3h-1.6l-5.8 6.6L8.4 3H3l6.9 10-6.9 8h1.6l6.1-7 4.8 7H21l-7.2-10.4Zm-2.2 2.5-.7-1L5.1 4.2h2.4l4.5 6.5.7 1 5.9 8.4h-2.4l-4.7-6.9Z"/></svg>
+                </a>
+              </div>
+              <div class="media-fallback">
+                <img src="/page/desktop/icons/paint.svg" alt="">
+                <p class="media-fallback-title">This recording will not load.</p>
+                <p>Watch it on <a href="https://x.com/tiramisurabhi/status/2092165148140360064" target="_blank" rel="noopener noreferrer">X</a> instead.</p>
+              </div>
+            </div>
+          </div>
+          <div class="media-caption" data-window-content="paint">{open === "paint" && <Fragment set:html={WINDOW_HTML.paint} />}</div>
+        </section>
+
+        <!-- Manifesto -------------------------------------------------- -->
+        <section class={`window glass ${open === "manifesto" ? "is-route" : ""}`} id="win-manifesto" data-fit="content" data-window="manifesto" data-w="720" data-h="600" aria-label="Manifesto">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <div class="window-title">Manifesto</div>
+          </div>
+          <div class="window-body">
+            <div class="window-scroll" data-window-content="manifesto">{open === "manifesto" && <Fragment set:html={WINDOW_HTML.manifesto} />}</div>
+          </div>
+        </section>
+
+        <!-- Join us ---------------------------------------------------- -->
+        <section class={`window glass ${open === "joinus" ? "is-route" : ""}`} id="win-joinus" data-fit="content" data-window="joinus" data-w="640" data-h="392" aria-label="Join us">
+          <div class="titlebar">
+            <div class="traffic">
+              <button class="tl-close" type="button" aria-label="Close"></button>
+              <button class="tl-min" type="button" aria-label="Minimise"></button>
+              <button class="tl-zoom" type="button" aria-label="Zoom"></button>
+            </div>
+            <div class="window-title"><img src="/page/desktop/icons/joinus.svg" alt="">Join Us</div>
+          </div>
+          <div class="window-body">
+            <div class="window-scroll" data-window-content="joinus">{open === "joinus" && <Fragment set:html={WINDOW_HTML.joinus} />}</div>
+          </div>
+        </section>
+
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- Dock                                                          -->
+    <!-- ============================================================ -->
+    <div class="dock-shelf">
+      <div class="dock glass" id="dock" role="group" aria-label="Dock">
+        <a href="/demos/" class="dock-item is-running" data-open="demos">
+          <span class="dock-tip glass">Finder</span>
+          <img src="/page/desktop/icons/finder.png" alt="Finder" width="192" height="192" decoding="async">
+          <span class="dock-dot"></span>
+        </a>
+        <button class="dock-item dock-optional" type="button" data-noop>
+          <span class="dock-tip glass">Messages</span>
+          <img src="/page/desktop/icons/messages.png" alt="Messages" width="192" height="192" decoding="async" loading="lazy">
+          <span class="dock-dot"></span>
+        </button>
+        <a href="/manifesto/" class="dock-item dock-optional" data-open="manifesto">
+          <span class="dock-tip glass">Manifesto</span>
+          <img src="/page/desktop/icons/notes.png" alt="Notes" width="192" height="192" decoding="async" loading="lazy">
+          <span class="dock-dot"></span>
+        </a>
+        <span class="dock-sep" aria-hidden="true"></span>
+
+        <a href="/join-us/" class="dock-item dock-optional" data-open="joinus">
+          <span class="dock-tip glass">Join Us</span>
+          <img src="/page/desktop/icons/joinus.svg" alt="Join Us" width="192" height="192" decoding="async" loading="lazy">
+        </a>
+
+        <span class="dock-sep" aria-hidden="true"></span>
+
+        <button class="dock-item is-running" type="button" data-alert="comingsoon">
+          <span class="dock-tip glass">Alma</span>
+          <img src="/page/desktop/icons/alma.png" alt="Alma" width="192" height="192" decoding="async">
+          <span class="dock-dot"></span>
+        </button>
+
+<span class="dock-minimised" id="dock-minimised"></span>
+        <button class="dock-item" type="button" data-noop>
+          <span class="dock-tip glass">Trash</span>
+          <img src="/page/desktop/icons/trash.png" alt="Trash" width="192" height="192" decoding="async">
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- Agent cursor + chrome                                         -->
+    <!-- ============================================================ -->
+    <div class="agent-cursor" id="agent-cursor" aria-hidden="true">
+      <span class="cursor-aura"></span>
+      <svg class="cursor-glyph" viewBox="0 0 30 30">
+        <defs>
+          <linearGradient id="cursorFill" x1="6" y1="2" x2="20" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset="0.42" stop-color="#fff6dd"/>
+            <stop offset="1" stop-color="#f0c67c"/>
+          </linearGradient>
+          <linearGradient id="cursorRim" x1="4" y1="2" x2="20" y2="24" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+            <stop offset="1" stop-color="#e0a94e" stop-opacity="0.9"/>
+          </linearGradient>
+        </defs>
+        <!-- tailless pointer: the round-joined stroke curves every corner -->
+        <path
+          d="M6 2.5 L6 21 L10.5 16.7 L11.8 15.8 L17 15.5 Z"
+          fill="url(#cursorFill)"
+          stroke="url(#cursorRim)"
+          stroke-width="2"
+          stroke-linejoin="round"
+          stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <div class="agent-hud glass" id="agent-hud" role="status" aria-live="polite">
+      <span class="hud-dot" aria-hidden="true"></span>
+      <span class="hud-text"></span>
+    </div>
+
+    <div class="prompt-scrim" id="prompt-scrim" hidden>
+      <div class="prompt-bar glass" role="dialog" aria-modal="true" aria-label="Ask Alma">
+        <div class="prompt-row">
+          <img class="prompt-mark" src="/page/desktop/icons/alma.png" alt="" width="192" height="192" decoding="async">
+          <input class="prompt-input ph-no-autocapture" id="prompt-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" data-ph-no-autocapture placeholder="Ask Alma to do something&hellip;" aria-label="Ask Alma to do something">
+          <span class="prompt-caret" aria-hidden="true"></span>
+        </div>
+        <ul class="prompt-results" id="prompt-results" role="listbox" aria-label="Results"></ul>
+      </div>
+    </div>
+
+    <div class="alert-scrim" id="alert-scrim" hidden>
+      <div class="alert-sheet glass" role="alertdialog" aria-modal="true" aria-labelledby="alert-title" aria-describedby="alert-body">
+        <img class="alert-icon" src="/page/desktop/icons/alma.png" alt="" width="192" height="192" decoding="async">
+        <p class="alert-title" id="alert-title">Alma is coming soon.</p>
+        <p class="alert-body" id="alert-body">The Mac app is in private testing. Leave an email and you will be in the next round of invites.</p>
+        <div class="alert-buttons">
+          <button class="alert-button" type="button" data-alert-close>Not now</button>
+          <button class="alert-button is-default" type="button" data-alert-waitlist>Join the waitlist</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="context-menu glass" id="context-menu" role="menu">
+      <button type="button" data-action="ask" role="menuitem">Ask Alma&#8230;<kbd>&#8984;K</kbd></button>
+      <a href="/demos/" data-open="demos" role="menuitem">Open Demos</a>
+      <a href="/manifesto/" data-open="manifesto" role="menuitem">Read the Manifesto</a>
+      <div class="menu-sep"></div>
+      <a href="/join-us/" data-open="joinus" role="menuitem">Join us&#8230;</a>
+      <button type="button" data-action="copy-email" role="menuitem">Copy email address</button>
+      <div class="menu-sep"></div>
+      <button type="button" data-action="close-all" role="menuitem">Show Desktop</button>
+    </div>
+
+
+    <script is:inline>
+      (() => {
+        "use strict";
+
+        const root = document.body;
+        const layer = document.getElementById("window-layer");
+        const cursorEl = document.getElementById("agent-cursor");
+        const dockEl = document.getElementById("dock");
+        const dockMinEl = document.getElementById("dock-min");
+        const contextMenu = document.getElementById("context-menu");
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+        const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+        const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+        const captureEvent = (name, properties, options) => {
+          if (window.posthog && typeof window.posthog.capture === "function") {
+            window.posthog.capture(name, properties, options);
+          }
+        };
+
+        /* ==============================================================
+           Windows
+           ============================================================== */
+        const windows = new Map();
+        document.querySelectorAll(".window").forEach((el) => windows.set(el.dataset.window, el));
+
+        // Every window is a real page. Opening one swaps the URL rather than
+        // reloading it, so the desktop stays put and the address bar stays honest.
+        const ROUTES = {
+          welcome: "/",
+          demos: "/demos/",
+          blender: "/demos/blender/",
+          paint: "/demos/paint/",
+          manifesto: "/manifesto/",
+          joinus: "/join-us/",
+          socials: "/socials/"
+        };
+        const TITLES = {
+          welcome: "Alma - The AI-native interface to your computer",
+          demos: "Demos - Alma computer use on a real Mac",
+          blender: "Blender demo - Alma builds a rocket with computer use",
+          paint: "Paint demo - Alma paints MS Paint by voice",
+          manifesto: "Manifesto - Alma",
+          joinus: "Join us - Alma is hiring",
+          socials: "Socials - Alma"
+        };
+        const WINDOW_FOR_PATH = Object.fromEntries(
+          Object.entries(ROUTES).map(([id, path]) => [path, id])
+        );
+        const routeFor = (path) => WINDOW_FOR_PATH[path.endsWith("/") ? path : path + "/"];
+
+        let focused = null;
+        let zSeed = 100;
+
+        const dockHeight = () => {
+          const shelf = document.querySelector(".dock-shelf");
+          return shelf ? shelf.getBoundingClientRect().height : 82;
+        };
+
+        // Everything a window must stay clear of along the bottom edge: the
+        // dock, plus the row of files when they are down there too.
+        const bottomInset = () => {
+          const dock = dockHeight();
+          if (!stripMode()) return dock;
+          const icons = iconStrip.getBoundingClientRect().height;
+          return dock + (icons ? icons + 8 : 0);
+        };
+
+        // The window layer moves on small screens (the desktop icons take a
+        // strip along the top), so every measurement is taken from the layer.
+        // In column mode the icons hold the right edge, and windows keep clear
+        // of them rather than burying the things you are meant to click.
+        // Windows are centred on the screen. With the desktop trimmed to a
+        // handful of icons in one narrow column they no longer collide, and a
+        // window that sits off-centre reads as a mistake.
+        const stageRect = () => {
+          const rect = layer.getBoundingClientRect();
+          return { left: rect.left, top: rect.top, width: rect.width, height: Math.max(200, rect.height), full: rect.width };
+        };
+
+        // data-w and data-h are the size at a full-size laptop screen. Below
+        // that everything scales with the room actually available, so shrinking
+        // the browser shrinks the windows rather than just clipping them.
+        const REFERENCE_WIDTH = 1236;
+        const REFERENCE_HEIGHT = 862;
+
+        function preferredSize(el) {
+          const stage = stageRect();
+          const designW = parseInt(el.dataset.w, 10) || 640;
+          const designH = parseInt(el.dataset.h, 10) || 520;
+          let maxW = stage.width - 32;
+          if (!stripMode()) {
+            // A centred window of width W reaches (S + W) / 2 on the right, so
+            // to stay clear of the icon column: W <= 2 * (columnLeft - gap) - S.
+            const strip = iconStrip.getBoundingClientRect();
+            if (strip.width) {
+              const clearance = 2 * (strip.left - stage.left - 14) - stage.width;
+              maxW = Math.min(maxW, Math.max(320, clearance));
+            }
+          }
+          const maxH = stage.height - bottomInset() - 24;
+
+          // On a phone or tablet the window should use the room it has. On a
+          // desktop it scales with the window so shrinking the browser shrinks
+          // everything in it, rather than only clipping at the edges.
+          const narrow = stripMode();
+          const wantW = narrow
+            ? Math.min(designW, maxW)
+            : Math.min(designW, Math.round(maxW * (designW / REFERENCE_WIDTH)));
+          const wantH = narrow
+            ? Math.min(designH, maxH)
+            : Math.min(designH, Math.round(maxH * (designH / REFERENCE_HEIGHT)));
+
+          return {
+            width: Math.round(clamp(wantW, Math.min(320, maxW), maxW)),
+            height: Math.round(clamp(wantH, Math.min(260, maxH), maxH))
+          };
+        }
+
+        // A window with a page of text in it should be the height of that text,
+        // not a fixed box with a pool of empty glass under the last line.
+        function fitToContent(el) {
+          if (el.dataset.fit !== "content" || el.dataset.zoomed === "1") return;
+          const scroll = el.querySelector(".window-scroll");
+          if (!scroll || !el.offsetHeight) return;
+          const stage = stageRect();
+          const chrome = el.offsetHeight - scroll.offsetHeight;
+          const maxH = stage.height - bottomInset() - 24;
+          const minH = Math.min(260, maxH);
+
+          // scrollHeight never reports less than clientHeight, so measuring the
+          // pane can only ever grow a window, never shrink one. Measure what is
+          // actually inside it instead.
+          // offsetHeight, not getBoundingClientRect: the latter includes any
+          // transform on an ancestor, so measuring mid-animation (restoring
+          // from the dock, for one) reports a fraction of the real height.
+          let content = 0;
+          for (const child of scroll.children) {
+            content = Math.max(content, child.offsetHeight);
+          }
+          const wanted = (content || scroll.scrollHeight) + chrome + 1;
+          const height = Math.round(clamp(wanted, minH, maxH));
+          // If the whole document fits, clip the pane so no scrollbar appears
+          // and no gutter is reserved for one.
+          el.classList.toggle("is-exact", wanted <= maxH);
+          el.style.height = height + "px";
+          const usable = stage.height - bottomInset();
+          el.style.top = Math.round(Math.max(10, (usable - height) / 2 - 4)) + "px";
+          applyRefraction(el, "window");
+        }
+
+        function placeWindow(el, size) {
+          const stage = stageRect();
+          const usableH = stage.height - bottomInset();
+          const left = Math.round((stage.width - size.width) / 2);
+          const top = Math.round(Math.max(12, (usableH - size.height) / 2 - 6));
+          el.style.width = size.width + "px";
+          el.style.height = size.height + "px";
+          el.style.left = clamp(left, 8, Math.max(8, stage.width - size.width - 8)) + "px";
+          el.style.top = top + "px";
+          fitToContent(el);
+          applyRefraction(el, "window");
+        }
+
+        function focusWindow(el) {
+          if (focused && focused !== el) focused.classList.remove("is-focused");
+          focused = el;
+          if (!el) return;
+          el.classList.add("is-focused");
+          el.style.zIndex = String(++zSeed);
+        }
+
+        function openWindow(id, originEl, options) {
+          const el = windows.get(id);
+          if (!el) return null;
+
+          dropChip(id);
+          releaseMinimise(el);
+          el.classList.remove("is-minimised");
+
+          const wasOpen = el.classList.contains("is-open");
+          fillWindow(id, el).then(() => {
+            if (el.classList.contains("is-open")) {
+              fitToContent(el);
+              applyRefraction(el, "window");
+            }
+          });
+          el.classList.remove("is-minimised");
+          el.classList.add("is-open");
+          if (!wasOpen) placeWindow(el, preferredSize(el));
+          focusWindow(el);
+          markSidebar(id);
+          prepareWindow(id, el, options);
+          applyRefraction(el, "window");
+          if (!wasOpen) bounceDock(id);
+
+          if (!wasOpen && !reducedMotion.matches) {
+            const rect = el.getBoundingClientRect();
+            let dx = 0;
+            let dy = 24;
+            if (originEl) {
+              const from = originEl.getBoundingClientRect();
+              dx = (from.left + from.width / 2) - (rect.left + rect.width / 2);
+              dy = (from.top + from.height / 2) - (rect.top + rect.height / 2);
+            }
+            el.animate(
+              [
+                { transform: `translate(${dx * 0.16}px, ${dy * 0.16}px) scale(0.9)`, opacity: 0 },
+                { transform: "translate(0, 0) scale(1)", opacity: 1 }
+              ],
+              { duration: 280, easing: "cubic-bezier(0.2, 0.9, 0.25, 1)" }
+            );
+          }
+
+          if (!(options && options.fromHistory) && window.history && ROUTES[id]) {
+            if (window.location.pathname !== ROUTES[id]) {
+              window.history.pushState({ window: id }, "", ROUTES[id]);
+            }
+            document.title = TITLES[id] || document.title;
+          }
+
+          captureEvent("desktop_window_opened", { item: id });
+          return el;
+        }
+
+        function closeWindow(el, originEl) {
+          if (!el || !el.classList.contains("is-open")) return Promise.resolve();
+
+          const finish = () => {
+            el.classList.remove("is-open", "is-minimised");
+            const video = el.querySelector("video");
+            if (video) video.pause();
+            if (focused === el) focused = null;
+          };
+
+          if (reducedMotion.matches) {
+            finish();
+            return Promise.resolve();
+          }
+
+          const rect = el.getBoundingClientRect();
+          let dx = 0;
+          let dy = 20;
+          if (originEl) {
+            const to = originEl.getBoundingClientRect();
+            dx = (to.left + to.width / 2) - (rect.left + rect.width / 2);
+            dy = (to.top + to.height / 2) - (rect.top + rect.height / 2);
+          }
+          const animation = el.animate(
+            [
+              { transform: "translate(0, 0) scale(1)", opacity: 1 },
+              { transform: `translate(${dx * 0.16}px, ${dy * 0.16}px) scale(0.9)`, opacity: 0 }
+            ],
+            { duration: 200, easing: "cubic-bezier(0.4, 0, 0.9, 0.4)" }
+          );
+          return animation.finished.catch(() => {}).then(finish);
+        }
+
+        // Minimised windows live in the dock as their own tiles, one per
+        // window, each a scaled rendering of the window with its app icon
+        // badged into the corner. That is what macOS puts there.
+        const minimisedChips = new Map();
+        const minimiseAnimations = new WeakMap();
+        const dockMinArea = document.getElementById("dock-minimised");
+
+        function buildChip(id, el) {
+          const rect = el.getBoundingClientRect();
+          const ratio = rect.width / Math.max(1, rect.height);
+
+          const chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "dock-item dock-min";
+          chip.style.setProperty("--min-ar", ratio.toFixed(3));
+          // The window's own title, not the Ask Alma catalogue's phrasing.
+          const titleEl = el.querySelector(".window-title");
+          const name = (titleEl ? titleEl.textContent : "").trim() || labelFor(id);
+          chip.setAttribute("aria-label", `Restore ${name}`);
+
+          const tip = document.createElement("span");
+          tip.className = "dock-tip glass";
+          tip.textContent = name;
+
+          const shot = document.createElement("span");
+          shot.className = "dock-min-shot";
+
+          const clone = el.cloneNode(true);
+          clone.removeAttribute("id");
+          clone.className = "window" + (el.classList.contains("has-toolbar") ? " has-toolbar" : "") +
+            (el.classList.contains("is-media") ? " is-media" : "") + " is-focused";
+          clone.querySelectorAll("video, .media-controls, .media-bigplay").forEach((n) => n.remove());
+          clone.querySelectorAll("[id]").forEach((n) => n.removeAttribute("id"));
+          clone.setAttribute("aria-hidden", "true");
+          clone.style.cssText =
+            "position:absolute;left:0;top:0;display:flex;margin:0;" +
+            `width:${rect.width}px;height:${rect.height}px;` +
+            "transform-origin:0 0;border-radius:0;box-shadow:none;" +
+            "background:#191920;backdrop-filter:none;-webkit-backdrop-filter:none;pointer-events:none;";
+          shot.append(clone);
+
+          const badge = document.createElement("img");
+          badge.className = "dock-min-badge";
+          const titleIcon = el.querySelector(".window-title img");
+          badge.src = titleIcon ? titleIcon.getAttribute("src") : "/page/desktop/icons/alma.png";
+          badge.alt = "";
+
+          chip.append(tip, shot, badge);
+          dockMinArea.append(chip);
+
+          const fit = () => {
+            const box = shot.getBoundingClientRect();
+            if (box.height) clone.style.transform = `scale(${(box.height / rect.height).toFixed(4)})`;
+          };
+          fit();
+          window.requestAnimationFrame(fit);
+
+          chip.addEventListener("click", () => restoreMinimised(id));
+          minimisedChips.set(id, chip);
+          return chip;
+        }
+
+        function dropChip(id) {
+          const chip = minimisedChips.get(id);
+          if (!chip) return;
+          minimisedChips.delete(id);
+          chip.remove();
+        }
+
+        const smoothStep = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+
+        // The genie: the window is drawn down toward its dock tile while a
+        // suction front travels up it, pinching the sides in as it passes.
+        function genieFrames(el, target, reverse) {
+          const rect = el.getBoundingClientRect();
+          const half = Math.max(3, (target.width / Math.max(1, rect.width)) * 50);
+          const dx = target.left + target.width / 2 - (rect.left + rect.width / 2);
+          const dy = target.top + target.height - rect.bottom;
+
+          const STEPS = 26;
+          const EDGE = 12;
+          const frames = [];
+          for (let i = 0; i <= STEPS; i += 1) {
+            const p = i / STEPS;
+            const points = [];
+            for (let k = 0; k < EDGE; k += 1) {
+              const s = k / (EDGE - 1);
+              const pinch = smoothStep(clamp(p * 1.75 - (1 - s) * 0.75, 0, 1));
+              const hw = 50 - (50 - half) * pinch;
+              points.push(`${(50 - hw).toFixed(2)}% ${(s * 100).toFixed(2)}%`);
+            }
+            for (let k = EDGE - 1; k >= 0; k -= 1) {
+              const s = k / (EDGE - 1);
+              const pinch = smoothStep(clamp(p * 1.75 - (1 - s) * 0.75, 0, 1));
+              const hw = 50 - (50 - half) * pinch;
+              points.push(`${(50 + hw).toFixed(2)}% ${(s * 100).toFixed(2)}%`);
+            }
+            const glide = smoothStep(p);
+            frames.push({
+              offset: p,
+              clipPath: `polygon(${points.join(", ")})`,
+              transform: `translate(${(dx * glide).toFixed(2)}px, ${(dy * glide).toFixed(2)}px) ` +
+                `scaleY(${(1 - 0.93 * smoothStep(Math.max(0, p * 1.3 - 0.3))).toFixed(4)})`,
+              opacity: p > 0.86 ? (1 - p) / 0.14 : 1
+            });
+          }
+          return reverse ? frames.reverse().map((f, i) => ({ ...f, offset: i / STEPS })) : frames;
+        }
+
+        function minimiseWindow(el) {
+          if (!el || !el.classList.contains("is-open") || el.classList.contains("is-minimised")) return;
+          const id = el.dataset.window;
+          const video = el.querySelector("video");
+          if (video) video.pause();
+
+          const chip = buildChip(id, el);
+
+          const settle = () => {
+            el.classList.add("is-minimised");
+            el.style.transform = "";
+            el.style.opacity = "";
+            el.style.clipPath = "";
+            if (focused === el) focused = null;
+          };
+
+          if (reducedMotion.matches) {
+            settle();
+            return;
+          }
+
+          chip.animate(
+            [{ transform: "scale(0.25)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }],
+            { duration: 360, easing: "cubic-bezier(0.2, 0.9, 0.25, 1)", delay: 200 }
+          );
+
+          el.style.transformOrigin = "50% 100%";
+          // Held with fill:forwards so the window stays collapsed until it is
+          // hidden; it has to be cancelled on the way back out or it keeps
+          // overriding everything the restore does.
+          const anim = el.animate(genieFrames(el, chip.getBoundingClientRect(), false), {
+            duration: 560,
+            easing: "linear",
+            fill: "forwards"
+          });
+          minimiseAnimations.set(el, anim);
+          anim.finished.catch(() => {}).then(settle);
+        }
+
+        function releaseMinimise(el) {
+          const held = minimiseAnimations.get(el);
+          if (held) {
+            held.cancel();
+            minimiseAnimations.delete(el);
+          }
+          el.style.transform = "";
+          el.style.opacity = "";
+          el.style.clipPath = "";
+        }
+
+        function restoreMinimised(id) {
+          const el = windows.get(id);
+          const chip = minimisedChips.get(id);
+          if (!el || !chip) return;
+          const target = chip.getBoundingClientRect();
+
+          dropChip(id);
+          releaseMinimise(el);
+          el.classList.remove("is-minimised");
+          openWindow(id, null, { fromHistory: false });
+
+          if (reducedMotion.matches) return;
+          el.style.transformOrigin = "50% 100%";
+          el.animate(genieFrames(el, target, true), {
+            duration: 480,
+            easing: "linear"
+          }).finished.catch(() => {}).then(() => {
+            el.style.transform = "";
+            el.style.clipPath = "";
+            fitToContent(el);
+          });
+        }
+
+        // Zoom on a Mac fits the window to its content, it does not smear a
+        // column of text across a wide display. Full height, comfortable width,
+        // centred.
+        function zoomWindow(el) {
+          const stage = stageRect();
+          if (el.dataset.zoomed === "1") {
+            el.dataset.zoomed = "0";
+            placeWindow(el, preferredSize(el));
+            return;
+          }
+          el.dataset.zoomed = "1";
+          const zoomWide = el.classList.contains("is-media") || el.classList.contains("has-toolbar");
+          const width = Math.round(Math.min(stage.full - 24, zoomWide ? 1240 : 900));
+          const height = Math.round(stage.height - bottomInset() - 16);
+          el.style.width = width + "px";
+          el.style.height = height + "px";
+          el.style.left = Math.round((stage.full - width) / 2) + "px";
+          el.style.top = "8px";
+          applyRefraction(el, "window");
+        }
+
+        function openWindowId() {
+          for (const [id, el] of windows) {
+            if (el.classList.contains("is-open") && !el.classList.contains("is-minimised")) return id;
+          }
+          return null;
+        }
+
+        function markSidebar(id) {
+          document.querySelectorAll(".sidebar-item").forEach((item) => {
+            item.classList.toggle("is-current", item.dataset.open === id);
+          });
+        }
+
+        /* ---- lazy content: videos and legal documents ---------------- */
+        const prepared = new Set();
+
+        // A route ships only its own window's body. The rest are pulled once
+        // from a small fragment the first time they are opened; a prefetch on
+        // idle means that is normally already in cache.
+        const fragments = new Map();
+
+        function fillWindow(id, el) {
+          const host = el.querySelector("[data-window-content]");
+          if (!host || host.childElementCount > 0) return Promise.resolve();
+          if (fragments.has(id)) {
+            host.innerHTML = fragments.get(id);
+            wireContent(host);
+            return Promise.resolve();
+          }
+          return fetch("/windows/" + id + ".html", { credentials: "same-origin" })
+            .then((response) => (response.ok ? response.text() : ""))
+            .then((html) => {
+              if (html && host.childElementCount === 0) {
+                fragments.set(id, html);
+                host.innerHTML = html;
+                wireContent(host);
+              }
+            })
+            .catch(() => {});
+        }
+
+        function prewarmFragments() {
+          const idle = window.requestIdleCallback || ((fn) => window.setTimeout(fn, 1500));
+          idle(() => {
+            windows.forEach((el, id) => {
+              const host = el.querySelector("[data-window-content]");
+              if (!host || host.childElementCount > 0 || fragments.has(id)) return;
+              fetch("/windows/" + id + ".html", { credentials: "same-origin" })
+                .then((r) => (r.ok ? r.text() : ""))
+                .then((html) => html && fragments.set(id, html))
+                .catch(() => {});
+            });
+          });
+        }
+
+        const smallScreen = () => window.matchMedia("(max-width: 700px)").matches;
+        // Below either threshold the desktop icons run along the top instead of
+        // down the right edge, so windows get the whole width underneath them.
+        // Below either threshold the desktop icons sit along the bottom, above
+        // the dock, instead of down the right edge.
+        const stripMode = () => window.matchMedia("(max-width: 1050px), (max-height: 560px)").matches;
+
+        function prepareWindow(id, el, options) {
+          const video = el.querySelector("video[data-src]");
+          if (video && !video.src) {
+            const stage = video.closest(".media-stage");
+            video.addEventListener(
+              "error",
+              () => stage && stage.classList.add("has-no-source"),
+              { once: true }
+            );
+            // `preload="none"` means setting these costs one poster and nothing
+            // else; the recording downloads when it is actually played.
+            video.poster = video.dataset.poster;
+            const saveData = navigator.connection && navigator.connection.saveData;
+            video.src = smallScreen() || saveData ? video.dataset.srcSm : video.dataset.src;
+          }
+
+          const stage = el.querySelector(".media-stage");
+          if (stage) setUpPlayer(stage);
+
+          // No autoplay: a browser will only start a video by itself if it is
+          // muted, and these demos are worth hearing. The poster and the play
+          // button wait for a click, and it plays with sound.
+
+          if (prepared.has(id)) return;
+          const doc = el.querySelector("[data-doc-src]");
+          if (!doc) return;
+          prepared.add(id);
+
+          fetch(doc.dataset.docSrc, { credentials: "same-origin" })
+            .then((response) => {
+              if (!response.ok) throw new Error("not ok");
+              return response.text();
+            })
+            .then((html) => {
+              const parsed = new DOMParser().parseFromString(html, "text/html");
+              const main = parsed.querySelector(".document main") || parsed.querySelector("main");
+              if (!main) throw new Error("no main");
+              main.querySelectorAll("script, style, nav, header, footer").forEach((n) => n.remove());
+              const loading = doc.querySelector(".doc-loading");
+              if (loading) loading.remove();
+              const lede = doc.querySelector(".doc-lede");
+              const firstHeading = main.querySelector("h1");
+              if (firstHeading) firstHeading.remove();
+              const holder = document.createElement("div");
+              holder.innerHTML = main.innerHTML;
+              holder.querySelectorAll("a[href^='http']").forEach((a) => {
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+              });
+              if (lede) {
+                lede.after(holder);
+              } else {
+                doc.append(holder);
+              }
+              fitToContent(el);
+            })
+            .catch(() => {
+              const loading = doc.querySelector(".doc-loading");
+              if (loading) loading.remove();
+            });
+        }
+
+        /* ==============================================================
+           The agent cursor
+           ============================================================== */
+        const cursor = {
+          x: window.innerWidth * 0.3,
+          y: window.innerHeight + 80,
+          visible: false
+        };
+
+        // Where the pointer's tip sits inside the 60px element, after the tilt.
+        const CURSOR_TIP = { x: 11, y: 6 };
+        const aimAt = (point) => moveCursorTo(point.x - CURSOR_TIP.x, point.y - CURSOR_TIP.y);
+
+        function paintCursor() {
+          cursorEl.style.transform = `translate3d(${cursor.x}px, ${cursor.y}px, 0)`;
+        }
+        paintCursor();
+
+        function sparkle(x, y) {
+          if (reducedMotion.matches) return;
+          const spark = document.createElement("span");
+          spark.className = "cursor-spark";
+          spark.style.left = x + "px";
+          spark.style.top = y + "px";
+          document.body.append(spark);
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 10 + Math.random() * 22;
+          spark
+            .animate(
+              [
+                { transform: "translate(0,0) scale(1)", opacity: 0.9 },
+                {
+                  transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance + 12}px) scale(0.2)`,
+                  opacity: 0
+                }
+              ],
+              { duration: 620 + Math.random() * 320, easing: "cubic-bezier(0.2,0.7,0.3,1)" }
+            )
+            .finished.catch(() => {})
+            .then(() => spark.remove());
+        }
+
+        function showCursor() {
+          if (cursor.visible) return Promise.resolve();
+          cursor.visible = true;
+          if (reducedMotion.matches) {
+            cursorEl.style.opacity = "1";
+            return Promise.resolve();
+          }
+          return cursorEl
+            .animate(
+              [
+                { opacity: 0, filter: "blur(3px)" },
+                { opacity: 1, filter: "blur(0px)" }
+              ],
+              { duration: 240, easing: "ease-out", fill: "forwards" }
+            )
+            .finished.catch(() => {});
+        }
+
+        function hideCursor() {
+          if (!cursor.visible) return Promise.resolve();
+          cursor.visible = false;
+          if (reducedMotion.matches) {
+            cursorEl.style.opacity = "0";
+            return Promise.resolve();
+          }
+          return cursorEl
+            .animate(
+              [
+                { opacity: 1, filter: "blur(0px)" },
+                { opacity: 0, filter: "blur(4px)" }
+              ],
+              { duration: 420, easing: "ease-in", fill: "forwards" }
+            )
+            .finished.catch(() => {});
+        }
+
+        function centreOf(el) {
+          const rect = el.getBoundingClientRect();
+          return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        }
+
+        // A hand never travels in a straight line and never changes speed in a
+        // step. The path is a cubic bezier whose control points are pushed
+        // perpendicular to the direction of travel, so it leaves in an arc and
+        // straightens onto the target; positions are sampled at eased values of
+        // t and played back linearly, which keeps the motion smooth instead of
+        // faceted between a handful of keyframes.
+        const easeInOutCubic = (t) =>
+          t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+        function moveCursorTo(x, y) {
+          const fromX = cursor.x;
+          const fromY = cursor.y;
+          const dx = x - fromX;
+          const dy = y - fromY;
+          const distance = Math.hypot(dx, dy);
+          cursor.x = x;
+          cursor.y = y;
+
+          if (reducedMotion.matches || distance < 2) {
+            paintCursor();
+            return Promise.resolve();
+          }
+
+          const duration = clamp(distance * 1.05, 520, 1350);
+
+          // Perpendicular to travel, leaning the same way each time so repeated
+          // moves read as one hand rather than a random walk.
+          const nx = -dy / (distance || 1);
+          const ny = dx / (distance || 1);
+          const bow = clamp(distance * 0.18, 16, 120) * (dx >= 0 ? 1 : -1);
+
+          const c1x = fromX + dx * 0.32 + nx * bow;
+          const c1y = fromY + dy * 0.32 + ny * bow;
+          const c2x = fromX + dx * 0.72 + nx * bow * 0.5;
+          const c2y = fromY + dy * 0.72 + ny * bow * 0.5;
+
+          const steps = 72;
+          const frames = [];
+          for (let i = 0; i <= steps; i += 1) {
+            const t = easeInOutCubic(i / steps);
+            const inv = 1 - t;
+            const a = inv * inv * inv;
+            const b = 3 * inv * inv * t;
+            const c = 3 * inv * t * t;
+            const d = t * t * t;
+            const px = a * fromX + b * c1x + c * c2x + d * x;
+            const py = a * fromY + b * c1y + c * c2y + d * y;
+            frames.push({ transform: `translate3d(${px.toFixed(2)}px, ${py.toFixed(2)}px, 0)` });
+          }
+
+          const sparkTimer = window.setInterval(
+            () => sparkle(cursor.x + CURSOR_TIP.x, cursor.y + CURSOR_TIP.y + 6),
+            Math.max(80, duration / 8)
+          );
+
+          return cursorEl
+            .animate(frames, { duration, easing: "linear", fill: "forwards" })
+            .finished.catch(() => {})
+            .then(() => {
+              window.clearInterval(sparkTimer);
+              paintCursor();
+            });
+        }
+
+        function cursorClick() {
+          const x = cursor.x + CURSOR_TIP.x;
+          const y = cursor.y + CURSOR_TIP.y;
+
+          if (!reducedMotion.matches) {
+            const ripple = document.createElement("span");
+            ripple.className = "cursor-ripple";
+            ripple.style.left = x + "px";
+            ripple.style.top = y + "px";
+            document.body.append(ripple);
+            ripple
+              .animate(
+                [
+                  { transform: "scale(0.35)", opacity: 0.95, borderWidth: "2px" },
+                  { transform: "scale(3.4)", opacity: 0, borderWidth: "0.5px" }
+                ],
+                { duration: 540, easing: "cubic-bezier(0.15,0.7,0.3,1)" }
+              )
+              .finished.catch(() => {})
+              .then(() => ripple.remove());
+            for (let i = 0; i < 5; i += 1) sparkle(x, y);
+          }
+
+          cursorEl.classList.add("is-pressing");
+          return wait(120).then(() => {
+            cursorEl.classList.remove("is-pressing");
+            return wait(90);
+          });
+        }
+
+        /* ==============================================================
+           Agent status HUD and dock launch bounce
+           ============================================================== */
+        const hud = document.getElementById("agent-hud");
+        const hudText = hud.querySelector(".hud-text");
+        let hudTimer = 0;
+
+        function showHud(text) {
+          window.clearTimeout(hudTimer);
+          hudText.textContent = text;
+          hud.classList.add("is-on");
+        }
+
+        function hideHud(delay) {
+          window.clearTimeout(hudTimer);
+          hudTimer = window.setTimeout(() => hud.classList.remove("is-on"), delay || 0);
+        }
+
+        function bounceDock(id) {
+          const tile = dockItemFor(id);
+          if (!tile || reducedMotion.matches) return;
+          tile.classList.remove("is-launching");
+          void tile.offsetWidth;
+          tile.classList.add("is-launching");
+          window.setTimeout(() => tile.classList.remove("is-launching"), 950);
+        }
+
+        /* ==============================================================
+           Choreography: close what is open, then open what was asked for
+           ============================================================== */
+        let sequence = 0;
+        const ABORTED = Symbol("aborted");
+
+        function selectIcon(id) {
+          document.querySelectorAll(".icon").forEach((icon) => {
+            icon.classList.toggle("is-selected", icon.dataset.open === id);
+          });
+        }
+
+        function iconFor(id) {
+          return document.querySelector(`.desktop-icons .icon[data-open="${id}"]`);
+        }
+
+        function dockItemFor(id) {
+          return document.querySelector(`.dock .dock-item[data-open="${id}"]`);
+        }
+
+        function labelFor(id) {
+          const item = CATALOGUE.find((entry) => entry.id === id);
+          return item ? item.title : id;
+        }
+
+        async function activate(id, trigger, options) {
+          if (!windows.has(id)) return;
+          closeAllMenus();
+
+          const mine = ++sequence;
+          const guard = () => {
+            if (mine !== sequence) throw ABORTED;
+          };
+
+          // The origin the cursor should visibly travel to: prefer the desktop
+          // icon, fall back to the dock tile, then to whatever was clicked.
+          const origin = iconFor(id) || dockItemFor(id) || trigger;
+          const currentId = openWindowId();
+
+          if (currentId === id) {
+            const el = windows.get(id);
+            focusWindow(el);
+            return;
+          }
+
+          const label = labelFor(id);
+
+          if (reducedMotion.matches || !origin) {
+            const current = currentId ? windows.get(currentId) : null;
+            if (current) await closeWindow(current, iconFor(currentId));
+            selectIcon(id);
+            openWindow(id, origin, options);
+            return;
+          }
+
+          try {
+            await showCursor();
+            guard();
+
+            if (currentId) {
+              showHud("Closing " + labelFor(currentId));
+              const currentEl = windows.get(currentId);
+              const closeButton = currentEl.querySelector(".tl-close");
+              const point = centreOf(closeButton);
+              await aimAt(point);
+              guard();
+              await cursorClick();
+              guard();
+              await closeWindow(currentEl, iconFor(currentId));
+              guard();
+              await wait(120);
+              guard();
+            }
+
+            showHud("Opening " + label);
+            const target = centreOf(origin);
+            await aimAt(target);
+            guard();
+            await cursorClick();
+            guard();
+
+            selectIcon(id);
+            openWindow(id, origin, options);
+            hideHud(900);
+            await wait(620);
+            guard();
+            await hideCursor();
+          } catch (error) {
+            hideHud(0);
+            if (error !== ABORTED) throw error;
+          }
+        }
+
+        /* ==============================================================
+           Dock magnification
+           ============================================================== */
+        const dockItems = () => Array.from(dockEl.querySelectorAll(".dock-item"));
+        const dockTile = () =>
+          parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-tile")) || 56;
+
+        // Scale as a function of horizontal distance, in tile widths.
+        const CURVE_X = [-6, -4.8, -3, 0, 3, 4.8, 6];
+        const CURVE_Y = [1, 1.1, 1.414, 2, 1.414, 1.1, 1];
+
+        function dockScaleFor(distanceInTiles) {
+          const d = Math.max(CURVE_X[0], Math.min(CURVE_X[CURVE_X.length - 1], distanceInTiles));
+          for (let i = 1; i < CURVE_X.length; i += 1) {
+            if (d <= CURVE_X[i]) {
+              const t = (d - CURVE_X[i - 1]) / (CURVE_X[i] - CURVE_X[i - 1]);
+              return CURVE_Y[i - 1] + (CURVE_Y[i] - CURVE_Y[i - 1]) * t;
+            }
+          }
+          return 1;
+        }
+
+        // A critically-ish damped spring, so tiles settle instead of snapping.
+        const dockTargets = new WeakMap();
+        const dockCurrent = new WeakMap();
+        let dockFrame = 0;
+        let dockSettled = true;
+        let dockActive = false;
+
+        function dockStep() {
+          const tile = dockTile();
+          let moving = false;
+          dockItems().forEach((item) => {
+            const target = dockTargets.get(item) ?? 1;
+            const now = dockCurrent.get(item) ?? 1;
+            const next = now + (target - now) * 0.32;
+            const settled = Math.abs(target - next) < 0.002;
+            const value = settled ? target : next;
+            dockCurrent.set(item, value);
+            item.style.width = (tile * value).toFixed(2) + "px";
+            if (!settled) moving = true;
+          });
+          if (moving) {
+            dockFrame = window.requestAnimationFrame(dockStep);
+            return;
+          }
+          dockSettled = true;
+          // Hand the width back to CSS only once the pointer has actually left,
+          // so a settled hover keeps the tiles it earned.
+          if (!dockActive) {
+            dockItems().forEach((item) => item.style.removeProperty("width"));
+          }
+        }
+
+        function pumpDock() {
+          if (dockSettled) {
+            dockSettled = false;
+            dockFrame = window.requestAnimationFrame(dockStep);
+          }
+        }
+
+        function resetDock() {
+          dockActive = false;
+          dockItems().forEach((item) => dockTargets.set(item, 1));
+          pumpDock();
+        }
+
+        function magnify(pointerX) {
+          dockActive = true;
+          const tile = dockTile();
+          dockItems().forEach((item) => {
+            const rect = item.getBoundingClientRect();
+            const centre = rect.left + rect.width / 2;
+            dockTargets.set(item, dockScaleFor((pointerX - centre) / tile));
+          });
+          pumpDock();
+        }
+
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+          dockEl.addEventListener("pointermove", (event) => {
+            if (reducedMotion.matches) return;
+            magnify(event.clientX);
+          });
+          dockEl.addEventListener("pointerleave", resetDock);
+        }
+
+        /* ==============================================================
+           Window chrome interactions
+           ============================================================== */
+        layer.addEventListener("pointerdown", (event) => {
+          const win = event.target.closest(".window");
+          if (win) focusWindow(win);
+        });
+
+        layer.addEventListener("click", (event) => {
+          const win = event.target.closest(".window");
+          if (!win) return;
+
+          if (event.target.closest(".tl-close")) {
+            closeWindow(win, iconFor(win.dataset.window));
+            selectIcon(null);
+            return;
+          }
+          if (event.target.closest(".tl-min")) {
+            minimiseWindow(win);
+            return;
+          }
+          if (event.target.closest(".tl-zoom")) {
+            zoomWindow(win);
+            return;
+          }
+
+          const opener = event.target.closest("[data-open]");
+          if (opener) {
+            event.preventDefault();
+            activate(opener.dataset.open, opener);
+          }
+        });
+
+        // Drag windows by the title bar, the way a real one moves.
+        layer.addEventListener("pointerdown", (event) => {
+          const bar = event.target.closest(".titlebar");
+          if (!bar || event.target.closest(".traffic")) return;
+          const win = bar.closest(".window");
+          if (!win) return;
+
+          const rect = win.getBoundingClientRect();
+          const offsetX = event.clientX - rect.left;
+          const offsetY = event.clientY - rect.top;
+          const top = layer.getBoundingClientRect().top;
+          bar.setPointerCapture(event.pointerId);
+
+          const onMove = (moveEvent) => {
+            const x = clamp(moveEvent.clientX - offsetX, -rect.width + 90, window.innerWidth - 90);
+            const y = clamp(moveEvent.clientY - offsetY - top, 0, window.innerHeight - top - 44);
+            win.style.left = Math.round(x) + "px";
+            win.style.top = Math.round(y) + "px";
+            win.dataset.zoomed = "0";
+          };
+          const onUp = () => {
+            bar.removeEventListener("pointermove", onMove);
+            bar.removeEventListener("pointerup", onUp);
+            bar.removeEventListener("pointercancel", onUp);
+          };
+          bar.addEventListener("pointermove", onMove);
+          bar.addEventListener("pointerup", onUp);
+          bar.addEventListener("pointercancel", onUp);
+        });
+
+
+        /* ==============================================================
+           Menu bar menus
+           ============================================================== */
+        function closeAllMenus() {
+          document.querySelectorAll(".menu-panel.is-open").forEach((panel) => panel.classList.remove("is-open"));
+          document.querySelectorAll("[data-menu].is-open").forEach((title) => {
+            title.classList.remove("is-open");
+            title.setAttribute("aria-expanded", "false");
+          });
+          contextMenu.classList.remove("is-open");
+        }
+
+        document.querySelectorAll("[data-menu]").forEach((title) => {
+          const panel = document.getElementById("menu-" + title.dataset.menu);
+          if (!panel) return;
+
+          const open = () => {
+            const wasOpen = panel.classList.contains("is-open");
+            closeAllMenus();
+            if (wasOpen) return;
+            const rect = title.getBoundingClientRect();
+            panel.style.left = Math.round(Math.min(rect.left, window.innerWidth - 232)) + "px";
+            panel.style.top = Math.round(rect.bottom + 3) + "px";
+            panel.classList.add("is-open");
+            title.classList.add("is-open");
+            title.setAttribute("aria-expanded", "true");
+          };
+
+          title.addEventListener("click", (event) => {
+            event.stopPropagation();
+            open();
+          });
+          title.addEventListener("pointerenter", () => {
+            if (document.querySelector(".menu-panel.is-open")) open();
+          });
+        });
+
+        /* ==============================================================
+           Desktop interactions
+           ============================================================== */
+        document.addEventListener("click", (event) => {
+          const alerter = event.target.closest("[data-alert]");
+          if (alerter) {
+            event.preventDefault();
+            sequence += 1;
+            openAlert();
+            return;
+          }
+
+          const opener = event.target.closest("[data-open]");
+          if (opener && !opener.closest(".window")) {
+            event.preventDefault();
+            activate(opener.dataset.open, opener);
+            return;
+          }
+
+          const action = event.target.closest("[data-action]");
+          if (action) {
+            event.preventDefault();
+            runAction(action.dataset.action);
+            return;
+          }
+
+          if (!event.target.closest(".menu-panel") && !event.target.closest("[data-menu]")) {
+            closeAllMenus();
+          }
+          if (event.target.closest(".desktop")) {
+            selectIcon(null);
+          }
+        });
+
+        function runAction(name) {
+          closeAllMenus();
+          if (name === "close-all") {
+            const id = openWindowId();
+            if (id) {
+              closeWindow(windows.get(id), iconFor(id));
+              selectIcon(null);
+            }
+          } else if (name === "minimise") {
+            const id = openWindowId();
+            if (id) minimiseWindow(windows.get(id));
+          } else if (name === "ask") {
+            openPrompt({ trigger: "context_menu" });
+          } else if (name === "copy-email") {
+            if (navigator.clipboard) navigator.clipboard.writeText("rkm@memfold.ai").catch(() => {});
+            captureEvent("email_copied", { location: "context_menu" });
+          }
+        }
+
+        document.getElementById("desktop").addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          closeAllMenus();
+          contextMenu.style.left = Math.min(event.clientX, window.innerWidth - 226) + "px";
+          contextMenu.style.top = Math.min(event.clientY, window.innerHeight - 190) + "px";
+          contextMenu.classList.add("is-open");
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+            event.preventDefault();
+            sequence += 1;
+            openPrompt({ trigger: "keyboard" });
+            return;
+          }
+          if (event.key === "Escape") {
+            if (!alertScrim.hidden) {
+              closeAlert();
+              return;
+            }
+            if (!promptScrim.hidden) {
+              closePrompt();
+              return;
+            }
+            closeAllMenus();
+            const id = openWindowId();
+            if (id) {
+              closeWindow(windows.get(id), iconFor(id));
+              selectIcon(null);
+            }
+            return;
+          }
+          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "w") {
+            const id = openWindowId();
+            if (id) {
+              event.preventDefault();
+              closeWindow(windows.get(id), iconFor(id));
+              selectIcon(null);
+            }
+          }
+          if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "g") {
+            event.preventDefault();
+            activate("demos");
+          }
+        });
+
+        let resizeFrame = 0;
+        window.addEventListener("resize", () => {
+          window.cancelAnimationFrame(resizeFrame);
+          resizeFrame = window.requestAnimationFrame(syncStripHeight);
+          fitDock();
+          window.setTimeout(refreshRefraction, 120);
+          windows.forEach((el) => {
+            if (!el.classList.contains("is-open")) return;
+            if (el.dataset.zoomed === "1") {
+              zoomWindow(el);
+              zoomWindow(el);
+              return;
+            }
+            placeWindow(el, preferredSize(el));
+          });
+          resetDock();
+        });
+
+        /* ==============================================================
+           Menu bar clock
+           ============================================================== */
+        const clockDate = document.querySelector(".clock-date");
+        const clockTime = document.querySelector(".clock-time");
+
+        // macOS writes "Wed 9 Sep" and "12:49 PM"; Intl's "Sept" is the wrong
+        // abbreviation for a menu bar, so the parts are assembled by hand.
+        const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+        function tick() {
+          const now = new Date();
+          clockDate.textContent = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]}`;
+          const hours = now.getHours();
+          const suffix = hours < 12 ? "AM" : "PM";
+          const hour12 = hours % 12 === 0 ? 12 : hours % 12;
+          clockTime.textContent = `${hour12}:${String(now.getMinutes()).padStart(2, "0")} ${suffix}`;
+        }
+        tick();
+        window.setInterval(tick, 15000);
+
+        /* ==============================================================
+           Waitlist
+           ============================================================== */
+        // Window bodies arrive either with the page or from a fragment, so the
+        // listeners inside them are attached per element and can run again.
+        const SOCIAL_EVENTS = {
+          x: "social_x_clicked",
+          instagram: "social_instagram_clicked",
+          linkedin: "social_linkedin_clicked"
+        };
+
+        function wireWaitlist(form) {
+          if (!form || form.dataset.wired === "1") return;
+          form.dataset.wired = "1";
+          const email = form.querySelector("input");
+          const submit = form.querySelector("button");
+          if (!email || !submit) return;
+
+          const syncButtonState = () => {
+            submit.disabled = !email.value.includes("@");
+          };
+
+          email.addEventListener("input", syncButtonState);
+          email.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !submit.disabled) {
+              event.preventDefault();
+              form.requestSubmit();
+            }
+          });
+
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            captureEvent("waitlist_form_submitted", { form_id: "homepage_waitlist" });
+            email.disabled = true;
+            submit.disabled = true;
+
+            try {
+              const response = await fetch("/waitlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email.value })
+              });
+              if (!response.ok) throw new Error("Request failed");
+              form.classList.add("is-submitted");
+              // The confirmation is taller than the row it replaces, so the
+              // window has to be measured again or it eats its own padding.
+              const host = form.closest(".window");
+              if (host) fitToContent(host);
+              captureEvent("waitlist_form_succeeded", { form_id: "homepage_waitlist" });
+            } catch {
+              captureEvent("waitlist_form_failed", { form_id: "homepage_waitlist" });
+              email.disabled = false;
+              email.value = "";
+              email.placeholder = "Something went wrong - try again";
+              syncButtonState();
+              email.focus();
+            }
+          });
+
+          syncButtonState();
+        }
+
+        function wireContent(scope) {
+          const root_ = scope || document;
+          wireWaitlist(root_.querySelector(".waitlist"));
+
+          root_.querySelectorAll("[data-platform]").forEach((link) => {
+            if (link.dataset.wired === "1") return;
+            link.dataset.wired = "1";
+            link.addEventListener("click", () => {
+              captureEvent(
+                SOCIAL_EVENTS[link.dataset.platform],
+                { location: link.closest(".window") ? "socials_folder" : "dock" },
+                { transport: "sendBeacon" }
+              );
+            });
+          });
+
+          root_.querySelectorAll("[data-join-mail]").forEach((link) => {
+            if (link.dataset.wired === "1") return;
+            link.dataset.wired = "1";
+            link.addEventListener("click", () => {
+              captureEvent("join_email_clicked", { location: "join_window" }, { transport: "sendBeacon" });
+            });
+          });
+        }
+
+        wireContent(document);
+
+
+        /* ==============================================================
+           Ask Alma: a prompt bar that routes plain language to a window
+           ============================================================== */
+        const CATALOGUE = [
+          { id: "blender", title: "Blender demo", sub: "Alma models a rocket in Blender", icon: "/page/desktop/icons/blender.svg",
+            keys: "blender 3d rocket model render animation build make create computer use" },
+          { id: "paint", title: "Paint demo", sub: "Alma paints in MS Paint, by voice", icon: "/page/desktop/icons/paint.svg",
+            keys: "paint draw drawing painting picture ms paint art voice speak talk" },
+          { id: "demos", title: "Demos", sub: "Both recordings, uncut", icon: "/page/desktop/icons/folder.png",
+            keys: "demo demos gallery video videos recording watch show me examples proof" },
+          { id: "manifesto", title: "Manifesto", sub: "Why the interface has to change", icon: "/page/desktop/icons/folder.png",
+            keys: "manifesto why believe vision principles interface philosophy read about" },
+          { id: "socials", title: "Socials", sub: "X, Instagram, LinkedIn", icon: "/page/desktop/icons/folder.png",
+            keys: "social socials twitter x instagram linkedin follow accounts handles" },
+          { id: "joinus", title: "Join Us", sub: "How we hire, and where to write", icon: "/page/desktop/icons/joinus.svg",
+            keys: "join us hiring hire job jobs role roles career careers work apply email contact reach" },
+          { id: "welcome", title: "Join the waitlist", sub: "Get an invite when Alma opens up", icon: "/page/desktop/icons/alma.png",
+            keys: "waitlist wait list signup sign up early access invite beta download install get app mac try" }
+        ];
+
+        const promptScrim = document.getElementById("prompt-scrim");
+        const promptBar = promptScrim.querySelector(".prompt-bar");
+        const promptInput = document.getElementById("prompt-input");
+        const promptResults = document.getElementById("prompt-results");
+        let promptIndex = 0;
+        let promptMatches = [];
+
+        // Filler words match everything, so they are dropped before scoring ,
+        // otherwise "build me a rocket" pulls in every entry containing "me".
+        const STOPWORDS = new Set([
+          "and", "are", "can", "could", "for", "how", "into", "its", "just", "let",
+          "make", "please", "some", "that", "the", "them", "then", "there", "these",
+          "this", "want", "was", "were", "what", "when", "where", "which", "will",
+          "with", "you", "your"
+        ]);
+
+        function scoreEntry(entry, query) {
+          const words = query
+            .split(/[^a-z0-9]+/)
+            .filter((word) => word.length > 2 && !STOPWORDS.has(word));
+          if (!words.length) return 1;
+
+          const title = entry.title.toLowerCase();
+          const keys = " " + entry.keys + " ";
+          let score = 0;
+          for (const word of words) {
+            if (title.startsWith(word)) score += 8;
+            else if (title.includes(word)) score += 5;
+            else if (keys.includes(" " + word + " ")) score += 4;
+            else if (word.length > 4 && keys.includes(word)) score += 2;
+          }
+          return score;
+        }
+
+        function renderPromptResults() {
+          const query = promptInput.value.trim().toLowerCase();
+          promptMatches = CATALOGUE.map((entry) => ({ entry, score: scoreEntry(entry, query) }))
+            .filter((row) => row.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, 4)
+            .map((row) => row.entry);
+
+          if (!promptMatches.length) {
+            promptMatches = [CATALOGUE.find((entry) => entry.id === "welcome")];
+          }
+          promptIndex = Math.min(promptIndex, promptMatches.length - 1);
+
+          promptResults.innerHTML = "";
+          promptMatches.forEach((entry, i) => {
+            const row = document.createElement("li");
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "prompt-result" + (i === promptIndex ? " is-active" : "");
+            button.setAttribute("role", "option");
+            button.innerHTML =
+              '<img src="' + entry.icon + '" alt="" width="26" height="26" decoding="async">' +
+              '<span class="prompt-result-text"><span class="prompt-result-title"></span>' +
+              '<span class="prompt-result-sub"></span></span>' +
+              '<span class="prompt-result-key">' + (i === promptIndex ? "&#8629;" : "") + "</span>";
+            button.querySelector(".prompt-result-title").textContent = entry.title;
+            button.querySelector(".prompt-result-sub").textContent = entry.sub;
+            button.addEventListener("click", () => runPrompt(entry));
+            row.append(button);
+            promptResults.append(row);
+          });
+        }
+
+        function openPrompt(options) {
+          closeAllMenus();
+          promptScrim.hidden = false;
+          promptInput.value = (options && options.value) || "";
+          promptIndex = 0;
+          renderPromptResults();
+          promptInput.focus();
+          applyRefraction(promptBar, "panel");
+          if (!reducedMotion.matches) {
+            promptBar.animate(
+              [
+                { transform: "translateY(-10px) scale(0.97)", opacity: 0 },
+                { transform: "translateY(0) scale(1)", opacity: 1 }
+              ],
+              { duration: 200, easing: "cubic-bezier(0.2,0.9,0.25,1)" }
+            );
+          }
+          captureEvent("prompt_bar_opened", { trigger: (options && options.trigger) || "user" });
+        }
+
+        function closePrompt() {
+          promptScrim.hidden = true;
+          promptBar.classList.remove("is-typing");
+        }
+
+        function runPrompt(entry) {
+          const query = promptInput.value.trim();
+          closePrompt();
+          captureEvent("prompt_bar_submitted", { query: query.slice(0, 80), item: entry.id });
+          activate(entry.id);
+        }
+
+        document.getElementById("prompt-trigger").addEventListener("click", () => openPrompt({ trigger: "menubar" }));
+        promptInput.addEventListener("input", () => {
+          promptIndex = 0;
+          renderPromptResults();
+        });
+        promptInput.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+            event.preventDefault();
+            promptIndex = (promptIndex + (event.key === "ArrowDown" ? 1 : -1) + promptMatches.length) % promptMatches.length;
+            renderPromptResults();
+          } else if (event.key === "Enter") {
+            event.preventDefault();
+            if (promptMatches[promptIndex]) runPrompt(promptMatches[promptIndex]);
+          } else if (event.key === "Escape") {
+            closePrompt();
+          }
+        });
+        promptScrim.addEventListener("pointerdown", (event) => {
+          if (event.target === promptScrim) closePrompt();
+        });
+
+        /* ==============================================================
+           "Alma is coming soon" alert
+           ============================================================== */
+        const alertScrim = document.getElementById("alert-scrim");
+
+        function openAlert() {
+          closeAllMenus();
+          closePrompt();
+          alertScrim.hidden = false;
+          const sheet = alertScrim.querySelector(".alert-sheet");
+          applyRefraction(sheet, "panel");
+          sheet.querySelector("[data-alert-close]").focus();
+          if (!reducedMotion.matches) {
+            sheet.animate(
+              [
+                { transform: "scale(0.9)", opacity: 0 },
+                { transform: "scale(1)", opacity: 1 }
+              ],
+              { duration: 200, easing: "cubic-bezier(0.2,0.9,0.25,1)" }
+            );
+          }
+          captureEvent("coming_soon_shown", { location: "alma_icon" });
+        }
+
+        function closeAlert() {
+          alertScrim.hidden = true;
+        }
+
+        alertScrim.addEventListener("click", (event) => {
+          if (event.target === alertScrim || event.target.closest("[data-alert-close]")) {
+            closeAlert();
+            return;
+          }
+          if (event.target.closest("[data-alert-waitlist]")) {
+            closeAlert();
+            captureEvent("coming_soon_waitlist_clicked", {});
+            activate("welcome").then(() => {
+              const field = document.getElementById("page-email");
+              if (field) field.focus();
+            });
+          }
+        });
+
+        /* ==============================================================
+           Fluid sizing: in column mode the grid keeps only as many rows as
+           actually fit; in bottom mode CSS lays the files out and bottomInset()
+           measures the result, so no width has to be guessed at.
+           ============================================================== */
+        const iconStrip = document.querySelector(".desktop-icons");
+
+        function syncStripHeight() {
+          if (!stripMode()) {
+            // Column mode: fit whole rows into the height that is actually free,
+            // then let the grid spill into more columns to the left.
+            const rowHeight = window.innerWidth <= 900 ? 96 : 112;
+            const free = layer.getBoundingClientRect().height - dockHeight() - 20;
+            const maxRows = Math.max(2, Math.min(6, Math.floor(free / rowHeight)));
+            // Balance the grid so the last column is never left with one or two
+            // strays: pick the column count first, then divide evenly.
+            const count = iconStrip.children.length;
+            const columns = Math.ceil(count / maxRows);
+            const rows = Math.ceil(count / columns);
+            iconStrip.style.gridTemplateRows = "repeat(" + rows + ", " + rowHeight + "px)";
+            return;
+          }
+          iconStrip.style.removeProperty("grid-template-rows");
+        }
+
+        if (typeof ResizeObserver === "function") {
+          new ResizeObserver(syncStripHeight).observe(iconStrip);
+        }
+        syncStripHeight();
+
+        // Shrink the dock until it fits, however narrow the screen is.
+        function fitDock() {
+          document.documentElement.style.removeProperty("--dock-tile");
+          const available = window.innerWidth - 24;
+          const width = dockEl.scrollWidth;
+          if (width <= available) return;
+          const base = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--dock-tile")) || 54;
+          const tile = Math.max(30, Math.floor(base * (available / width)));
+          document.documentElement.style.setProperty("--dock-tile", tile + "px");
+        }
+
+
+
+        /* ==============================================================
+           Video player
+           The browser's default control bar does not belong in a Mac window,
+           so each demo drives its own: play, elapsed and remaining time, a
+           draggable scrubber, mute, and a link out to the original post.
+           ============================================================== */
+        function formatClock(seconds) {
+          if (!isFinite(seconds) || seconds < 0) seconds = 0;
+          const whole = Math.floor(seconds);
+          return Math.floor(whole / 60) + ":" + String(whole % 60).padStart(2, "0");
+        }
+
+        function setUpPlayer(stage) {
+          if (stage.dataset.wired === "1") return;
+          stage.dataset.wired = "1";
+
+          const video = stage.querySelector("video");
+          const scrub = stage.querySelector("[data-media-scrub]");
+          const fill = stage.querySelector("[data-media-fill]");
+          const knob = stage.querySelector("[data-media-knob]");
+          const elapsed = stage.querySelector("[data-media-elapsed]");
+          const remaining = stage.querySelector("[data-media-remaining]");
+          if (!video || !scrub) return;
+
+          let scrubbing = false;
+
+          const paint = () => {
+            const duration = video.duration || 0;
+            const ratio = duration ? clamp(video.currentTime / duration, 0, 1) : 0;
+            fill.style.width = (ratio * 100).toFixed(3) + "%";
+            knob.style.left = (ratio * 100).toFixed(3) + "%";
+            elapsed.textContent = formatClock(video.currentTime);
+            remaining.textContent = "-" + formatClock(duration - video.currentTime);
+            scrub.setAttribute("aria-valuenow", Math.round(ratio * 100));
+          };
+
+          const seekFromPointer = (clientX) => {
+            const rect = scrub.getBoundingClientRect();
+            const ratio = clamp((clientX - rect.left) / rect.width, 0, 1);
+            if (video.duration) video.currentTime = ratio * video.duration;
+            paint();
+          };
+
+          stage.querySelectorAll("[data-media-toggle]").forEach((button) => {
+            button.addEventListener("click", () => {
+              if (video.paused) {
+                const play = video.play();
+                if (play && typeof play.catch === "function") play.catch(() => {});
+              } else {
+                video.pause();
+              }
+            });
+          });
+
+          const muteButton = stage.querySelector("[data-media-mute]");
+          if (muteButton) {
+            muteButton.addEventListener("click", () => {
+              video.muted = !video.muted;
+              if (!video.muted && video.volume === 0) video.volume = 1;
+              stage.classList.toggle("is-muted", video.muted);
+              muteButton.setAttribute("aria-label", video.muted ? "Unmute" : "Mute");
+            });
+          }
+
+          scrub.addEventListener("pointerdown", (event) => {
+            scrubbing = true;
+            scrub.classList.add("is-scrubbing");
+            scrub.setPointerCapture(event.pointerId);
+            seekFromPointer(event.clientX);
+          });
+          scrub.addEventListener("pointermove", (event) => {
+            if (scrubbing) seekFromPointer(event.clientX);
+          });
+          const endScrub = () => {
+            scrubbing = false;
+            scrub.classList.remove("is-scrubbing");
+          };
+          scrub.addEventListener("pointerup", endScrub);
+          scrub.addEventListener("pointercancel", endScrub);
+          scrub.addEventListener("keydown", (event) => {
+            const step = event.shiftKey ? 10 : 5;
+            if (event.key === "ArrowRight") {
+              event.preventDefault();
+              video.currentTime = Math.min(video.duration || 0, video.currentTime + step);
+            } else if (event.key === "ArrowLeft") {
+              event.preventDefault();
+              video.currentTime = Math.max(0, video.currentTime - step);
+            }
+          });
+
+          video.addEventListener("play", () => stage.classList.add("is-playing"));
+          video.addEventListener("pause", () => stage.classList.remove("is-playing"));
+          video.addEventListener("ended", () => stage.classList.remove("is-playing"));
+          video.addEventListener("timeupdate", paint);
+          video.addEventListener("loadedmetadata", paint);
+          video.addEventListener("volumechange", () => stage.classList.toggle("is-muted", video.muted));
+
+          video.muted = false;
+          stage.classList.toggle("is-muted", video.muted);
+          paint();
+        }
+
+        /* ==============================================================
+           Liquid Glass refraction
+
+           The rim of a real glass panel bends what is behind it. That needs a
+           displacement map fed to backdrop-filter, which only Chromium allows,
+           so this is an enhancement on top of the CSS material rather than a
+           requirement. Map recipe follows nikdelvin/liquid-glass: a neutral
+           #808080 field (no displacement) with red and green ramps encoding X
+           and Y, and a blurred rounded rect flattening the middle so only the
+           bevel refracts.
+           ============================================================== */
+        const supportsBackdropUrl = (() => {
+          const probe = document.createElement("div");
+          probe.style.cssText = "backdrop-filter: url(#probe)";
+          return probe.style.backdropFilter === "url(#probe)" || probe.style.backdropFilter === 'url("#probe")';
+        })();
+
+        function displacementMap(width, height, radius, depth) {
+          return (
+            "data:image/svg+xml;utf8," +
+            encodeURIComponent(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">` +
+                `<style is:inline>.m{mix-blend-mode:screen}</style><defs>` +
+                `<linearGradient id="Y" x1="0" x2="0" y1="${Math.ceil((radius / height) * 15)}%" y2="${Math.floor(100 - (radius / height) * 15)}%">` +
+                `<stop offset="0%" stop-color="#0F0"/><stop offset="100%" stop-color="#000"/></linearGradient>` +
+                `<linearGradient id="X" x1="${Math.ceil((radius / width) * 15)}%" x2="${Math.floor(100 - (radius / width) * 15)}%" y1="0" y2="0">` +
+                `<stop offset="0%" stop-color="#F00"/><stop offset="100%" stop-color="#000"/></linearGradient></defs>` +
+                `<rect width="${width}" height="${height}" fill="#808080"/>` +
+                `<g filter="blur(2px)">` +
+                `<rect width="${width}" height="${height}" fill="#000080"/>` +
+                `<rect width="${width}" height="${height}" fill="url(#Y)" class="m"/>` +
+                `<rect width="${width}" height="${height}" fill="url(#X)" class="m"/>` +
+                `<rect x="${depth}" y="${depth}" width="${width - 2 * depth}" height="${height - 2 * depth}" rx="${radius}" ry="${radius}" fill="#808080" filter="blur(${depth}px)"/>` +
+                `</g></svg>`
+            )
+          );
+        }
+
+        function refractionFilter(width, height, radius, depth, strength) {
+          const map = displacementMap(width, height, radius, depth);
+          return (
+            "data:image/svg+xml;utf8," +
+            encodeURIComponent(
+              `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><defs>` +
+                `<filter id="d" color-interpolation-filters="sRGB">` +
+                `<feImage x="0" y="0" width="${width}" height="${height}" href="${map}" result="map"/>` +
+                `<feDisplacementMap in="SourceGraphic" in2="map" scale="${strength}" xChannelSelector="R" yChannelSelector="G"/>` +
+                `</filter></defs></svg>`
+            ) +
+            "#d"
+          );
+        }
+
+        const GLASS_TUNING = {
+          window: { depth: 9, strength: 42 },
+          dock: { depth: 8, strength: 36 },
+          panel: { depth: 7, strength: 30 }
+        };
+
+        function applyRefraction(el, kind) {
+          if (!supportsBackdropUrl || reducedMotion.matches) return;
+          if (window.matchMedia("(prefers-reduced-transparency: reduce)").matches) return;
+          const rect = el.getBoundingClientRect();
+          const width = Math.round(rect.width);
+          const height = Math.round(rect.height);
+          if (width < 40 || height < 40) return;
+          if (el.dataset.glassSize === width + "x" + height) return;
+          el.dataset.glassSize = width + "x" + height;
+
+          const style = getComputedStyle(el);
+          const radius = parseFloat(style.borderTopLeftRadius) || 12;
+          const tuning = GLASS_TUNING[kind] || GLASS_TUNING.panel;
+          const blur = style.getPropertyValue("--glass-blur").trim() || "26px";
+          const saturate = style.getPropertyValue("--glass-sat").trim() || "1.7";
+          const bright = style.getPropertyValue("--glass-bright").trim() || "1.08";
+          const filter =
+            `url("${refractionFilter(width, height, Math.min(radius, Math.min(width, height) / 2), tuning.depth, tuning.strength)}") ` +
+            `blur(${blur}) saturate(${saturate}) brightness(${bright})`;
+          el.style.backdropFilter = filter;
+          el.style.webkitBackdropFilter = filter;
+        }
+
+        function refreshRefraction() {
+          windows.forEach((el) => {
+            if (el.classList.contains("is-open")) applyRefraction(el, "window");
+          });
+          applyRefraction(dockEl, "dock");
+          if (!promptScrim.hidden) applyRefraction(promptBar, "panel");
+          if (!alertScrim.hidden) applyRefraction(alertScrim.querySelector(".alert-sheet"), "panel");
+        }
+
+        /* ==============================================================
+           Boot
+           ============================================================== */
+        // Open the window this URL is for. The server already marked it and
+        // shipped its content, so this is only the desktop catching up.
+        const bootId = routeFor(window.location.pathname) || "welcome";
+        const boot = windows.get(bootId) || windows.get("welcome");
+
+        // Display first: a hidden element measures as zero, and the fit pass
+        // would size the window to its minimum.
+        boot.classList.add("is-open");
+        placeWindow(boot, preferredSize(boot));
+        focusWindow(boot);
+        markSidebar(boot.dataset.window);
+        prepareWindow(boot.dataset.window, boot, { quiet: true });
+        if (boot.dataset.window !== "welcome") selectIcon(boot.dataset.window);
+
+        // Deep link: /#manifesto opens straight into that window, and a hash
+        // typed later (or arrived at through the back button) does the same.
+        fitDock();
+        syncStripHeight();
+        refreshRefraction();
+        prewarmFragments();
+
+        // Miranda Sans swaps in after first paint and the copy gets taller, so
+        // anything already sized to its content has to be measured again.
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => {
+            windows.forEach((el) => {
+              if (el.classList.contains("is-open")) fitToContent(el);
+            });
+          });
+        }
+
+        // Old hash links still resolve, and Back and Forward walk the routes
+        // without a reload.
+        const HASH_ALIASES = { gallery: "demos", joinus: "joinus" };
+        const hash = window.location.hash.replace("#", "");
+        const fromHash = HASH_ALIASES[hash] || hash;
+        if (fromHash && windows.has(fromHash) && fromHash !== openWindowId()) {
+          window.setTimeout(() => activate(fromHash), 400);
+        }
+
+        window.addEventListener("popstate", () => {
+          const id = routeFor(window.location.pathname) || "welcome";
+          if (id === openWindowId()) return;
+          const current = openWindowId();
+          if (current) closeWindow(windows.get(current), iconFor(current));
+          selectIcon(id === "welcome" ? null : id);
+          openWindow(id, iconFor(id), { fromHistory: true });
+          document.title = TITLES[id] || document.title;
+        });
+
+      })();
+    </script>
+  

@@ -14,3 +14,8 @@ backend/staticfiles/
 
 # Generated static site
 .build/
+
+# Astro
+node_modules/
+site/.astro/
+.astro/

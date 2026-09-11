@@ -3,7 +3,7 @@
 # Verify a built site directory against the live site: every file must match by
 # sha256, and repo internals must not be reachable from the webroot. Used by the
 # GitHub Actions deploy workflow; also works locally after
-# `python3 scripts/build_site.py --output .build`.
+# `npm run build` (Astro, output in .build).
 #
 # Usage: deploy/verify-live.sh <build-dir>   (SITE overrides https://alma.inc)
 
@@ -38,7 +38,7 @@ while IFS= read -r -d '' f; do
 done < <(find "$build" -type f -print0)
 
 # Anything tracked outside public/ and site/pages/ must never be served.
-for p in site/layout.html site/pages/index.html scripts/build_site.py DEPLOY.md deploy.sh deploy/nginx-alma.conf; do
+for p in site/layouts/Base.astro site/pages/index.astro astro.config.mjs package.json DEPLOY.md deploy.sh deploy/nginx-alma.conf; do
   code="$(curl -sS -m 20 -o /dev/null -w '%{http_code}' "${site}/${p}")"
   if [[ "$code" == "404" ]]; then
     echo "ok       /${p} -> 404"

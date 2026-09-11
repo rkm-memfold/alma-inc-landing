@@ -1,0 +1,106 @@
+---
+/**
+ * The desktop wallpaper, rendered as SVG rather than served as a flat bitmap.
+ *
+ * This is the Figma export reassembled: the same geometry, the same grain
+ * filter, but with the 8.5 MB base64 raster it carried replaced by a reference
+ * to a plate built from it by scripts/build_wallpaper.py.
+ *
+ * The blur is baked into that plate, because it is static and a full-screen
+ * gaussian on every load is a cost with no return. The grain is not baked,
+ * because it is the half that benefits from staying vector: it resolves at
+ * device resolution however large the display, costs no bytes, and dithers the
+ * banding a blurred 8-bit gradient would otherwise show across the dark middle.
+ *
+ * There is no preserveAspectRatio scaling. The artwork is drawn at the size it
+ * was authored at and the CSS centres it, so the viewport decides how much of
+ * the composition is visible rather than how far it is zoomed.
+ *
+ * Geometry comes from the generated module, not from numbers typed twice.
+ */
+import { WALLPAPER } from "../content/wallpaper.mjs";
+
+const { view, plate, colour, source } = WALLPAPER;
+---
+
+<svg
+  class="wallpaper"
+  width={view.width}
+  height={view.height}
+  viewBox={`0 0 ${view.width} ${view.height}`}
+  aria-hidden="true"
+  focusable="false"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect width={view.width} height={view.height} fill={colour} />
+
+  <!-- The plate is larger than the frame and hangs off it, so the composition
+       is already cropped by design. -->
+  <image
+    href={source}
+    x={plate.x}
+    y={plate.y}
+    width={plate.width}
+    height={plate.height}
+    preserveAspectRatio="none"
+  />
+
+  <rect width={view.width} height={view.height} fill="url(#wallpaper-grain-tile)" style="mix-blend-mode: lighten" />
+
+  <defs>
+    <!-- The noise is stitched, so it can be computed once over one tile and
+         repeated rather than evaluated across the whole frame. baseFrequency 2
+         over a 256 unit tile is 512 whole cycles, so the seam is exact, and at
+         this frequency there is no structure large enough for the repeat to be
+         visible. -->
+    <pattern id="wallpaper-grain-tile" width="256" height="256" patternUnits="userSpaceOnUse">
+      <g filter="url(#wallpaper-grain)">
+        <rect width="256" height="256" fill="#fff" fill-opacity="0.01" />
+      </g>
+    </pattern>
+
+    <!-- Figma's film grain, kept as authored: fractal noise read as alpha, then
+         split into two discrete bands so the speckle is sparse rather than a
+         wash, one band flooded white and one black, merged back over the rect. -->
+    <filter
+      id="wallpaper-grain"
+      x="0"
+      y="0"
+      width="256"
+      height="256"
+      filterUnits="userSpaceOnUse"
+      color-interpolation-filters="sRGB"
+    >
+      <!-- Kept verbatim from the export, padded region and all. Clipping the
+           noise to a blended copy of the source rather than to SourceGraphic
+           directly is Figma's own spelling, and there is no upside to
+           second-guessing a filter chain that already matches. -->
+      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+      <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+
+      <feTurbulence type="fractalNoise" baseFrequency="2 2" stitchTiles="stitch" numOctaves="3" seed="4133" result="noise" />
+      <feColorMatrix in="noise" type="luminanceToAlpha" result="alphaNoise" />
+
+      <feComponentTransfer in="alphaNoise" result="lightNoise">
+        <feFuncA type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " />
+      </feComponentTransfer>
+      <feComposite operator="in" in="lightNoise" in2="shape" result="lightClipped" />
+
+      <feComponentTransfer in="alphaNoise" result="darkNoise">
+        <feFuncA type="discrete" tableValues="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " />
+      </feComponentTransfer>
+      <feComposite operator="in" in="darkNoise" in2="shape" result="darkClipped" />
+
+      <feFlood flood-color="rgba(255, 255, 255, 0.15)" result="lightFlood" />
+      <feComposite operator="in" in="lightFlood" in2="lightClipped" result="light" />
+      <feFlood flood-color="rgba(0, 0, 0, 0.15)" result="darkFlood" />
+      <feComposite operator="in" in="darkFlood" in2="darkClipped" result="dark" />
+
+      <feMerge>
+        <feMergeNode in="shape" />
+        <feMergeNode in="light" />
+        <feMergeNode in="dark" />
+      </feMerge>
+    </filter>
+  </defs>
+</svg>

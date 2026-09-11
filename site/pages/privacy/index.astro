@@ -1,6 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
+---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base lang="en">
+  <Fragment slot="head">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="What Alma collects, what it never collects, and the settings that decide.">
@@ -21,13 +24,13 @@
     <meta property="og:image:alt" content="Alma, an AI-native computer interface">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@thinkwithalma">
+    <meta name="twitter:site" content="@alma_inc">
     <meta name="twitter:title" content="Privacy Policy - Alma">
     <meta name="twitter:description" content="What Alma collects, what it never collects, and the settings that decide.">
     <meta name="twitter:image" content="https://alma.inc/og-alma-wordmark.png">
 
     <title>Privacy Policy - Alma</title>
-    <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="/client-logomark-dark.png">
 
     <script type="application/ld+json">
@@ -43,10 +46,10 @@
       }
     </script>
 
-    <style>
+    <style is:inline>
       @font-face {
         font-family: "Miranda Sans";
-        src: url("/page/fonts/miranda-400.ttf") format("truetype");
+        src: url("/page/fonts/miranda-400.woff2") format("woff2");
         font-style: normal;
         font-weight: 400;
         font-display: swap;
@@ -54,17 +57,9 @@
 
       @font-face {
         font-family: "Miranda Sans";
-        src: url("/page/fonts/miranda-500.ttf") format("truetype");
+        src: url("/page/fonts/miranda-500.woff2") format("woff2");
         font-style: normal;
         font-weight: 500;
-        font-display: swap;
-      }
-
-      @font-face {
-        font-family: "Miranda Sans";
-        src: url("/page/fonts/miranda-700.ttf") format("truetype");
-        font-style: normal;
-        font-weight: 700;
         font-display: swap;
       }
 
@@ -215,8 +210,8 @@
         color: var(--muted);
       }
     </style>
-  </head>
-  <body>
+  </Fragment>
+
     <div class="document">
       <a class="brand" href="/" aria-label="Alma home">
         <img src="/client-logo-dark.svg" alt="Alma">
@@ -295,5 +290,4 @@
         <a href="/terms/">Terms and Conditions</a> &middot; <a href="/">alma.inc</a>
       </footer>
     </div>
-  </body>
-</html>
+</Base>

@@ -33,5 +33,12 @@ Allow: /
 
 User-agent: *
 Allow: /
+# Content fragments the desktop loads for windows this URL did not ship.
+# The same text is already indexed on its own page.
+Disallow: /windows/
 
 Sitemap: https://alma.inc/sitemap.xml
+
+# A plain-text summary written for language models.
+# https://llmstxt.org
+LLM-Content: https://alma.inc/llms.txt

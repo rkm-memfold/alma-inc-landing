@@ -15,7 +15,7 @@ anonymous visitor ID across reloads and return visits. If Statistics consent is
 denied or withdrawn, PostHog and session replay remain disabled and PostHog
 persistence is cleared.
 
-The consent-aware bootstrap lives in `site/layout.html`, so every generated page
+The consent-aware bootstrap lives in `site/layouts/Base.astro`, so every page
 inherits the same behavior. Do not add PostHog directly to an individual page.
 Do not enable cookieless server hash mode for this site because it strips IP data
 before PostHog can perform GeoIP enrichment.
@@ -51,7 +51,7 @@ the page and confirm the PostHog distinct ID remains unchanged.
 For a local build:
 
 ```sh
-POSTHOG_PROJECT_TOKEN='<project-token>' python3 scripts/build_site.py
+POSTHOG_PROJECT_TOKEN='<project-token>' npm run build
 ```
 
 Official references:

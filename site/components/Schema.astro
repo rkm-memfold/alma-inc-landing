@@ -1,0 +1,192 @@
+---
+/**
+ * The JSON-LD graph for a page.
+ *
+ * Organization, WebSite and SoftwareApplication are defined once on the
+ * homepage and referenced by @id everywhere else, so every page joins one
+ * graph instead of restating the company nine times.
+ *
+ * The two VideoObjects live on the pages that actually show the recording.
+ * They were on the homepage, which embeds neither in its visible state, and a
+ * VideoObject on a page where the video is not the content is the kind of
+ * mismatch that loses a rich result rather than winning one.
+ */
+const ORG = "https://alma.inc/#organization";
+const SITE = "https://alma.inc/#website";
+
+const { page } = Astro.props;
+
+const PAGES = {
+  welcome:   { url: "https://alma.inc/",               name: "Alma",                 crumb: null },
+  demos:     { url: "https://alma.inc/demos/",         name: "Demos",                crumb: "Demos" },
+  blender:   { url: "https://alma.inc/demos/blender/", name: "Blender demo",         crumb: "Blender demo" },
+  paint:     { url: "https://alma.inc/demos/paint/",   name: "Paint demo",           crumb: "Paint demo" },
+  manifesto: { url: "https://alma.inc/manifesto/",     name: "Manifesto",            crumb: "Manifesto" },
+  joinus:    { url: "https://alma.inc/join-us/",       name: "Join us",              crumb: "Join us" },
+  socials:   { url: "https://alma.inc/socials/",       name: "Socials",              crumb: "Socials" },
+};
+
+const VIDEOS = {
+  blender: {
+    name: "Alma builds a rocket in Blender with computer use",
+    description:
+      "Alma opens Blender on a Mac and models a rocket end to end using computer use. Under two minutes, about $0.30. Filmed off the screen, uncut.",
+    slug: "blender",
+    duration: "PT1M57S",
+  },
+  paint: {
+    name: "Alma paints in MS Paint by voice",
+    description:
+      "Alma drives MS Paint by voice, using the brush, the palette and the fill tool, the same surface a person would use.",
+    slug: "paint",
+    duration: "PT53S",
+  },
+};
+
+const here = PAGES[page];
+
+const video = (key) => ({
+  "@type": "VideoObject",
+  "@id": `${PAGES[key].url}#video`,
+  name: VIDEOS[key].name,
+  description: VIDEOS[key].description,
+  thumbnailUrl: `https://alma.inc/page/desktop/demos/${VIDEOS[key].slug}-poster.jpg`,
+  contentUrl: `https://alma.inc/page/desktop/demos/${VIDEOS[key].slug}.mp4`,
+  embedUrl: PAGES[key].url,
+  uploadDate: "2026-09-09",
+  duration: VIDEOS[key].duration,
+  isFamilyFriendly: true,
+  publisher: { "@id": ORG },
+});
+
+const graph = [];
+
+if (page === "welcome") {
+  graph.push(
+    {
+      "@type": "Organization",
+      "@id": ORG,
+      name: "Alma",
+      legalName: "Memfold AI Inc.",
+      url: "https://alma.inc/",
+      logo: "https://alma.inc/client-logomark-dark.svg",
+      description:
+        "Alma is an AI-native computer interface that helps people control their computer by describing work.",
+      email: "rkm@memfold.ai",
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: "2261 Market Street STE 85610",
+        addressLocality: "San Francisco",
+        addressRegion: "CA",
+        postalCode: "94114",
+        addressCountry: "US",
+      },
+      sameAs: [
+        "https://x.com/alma_inc",
+        "https://www.instagram.com/thinkwithalma",
+        "https://www.linkedin.com/company/tryalmanac/",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": SITE,
+      name: "Alma",
+      url: "https://alma.inc/",
+      description:
+        "Alma is an AI-native computer interface for the computer people already use.",
+      publisher: { "@id": ORG },
+      inLanguage: "en",
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://alma.inc/#app",
+      name: "Alma",
+      applicationCategory: "ProductivityApplication",
+      applicationSubCategory: "AI computer interface",
+      operatingSystem: "macOS",
+      url: "https://alma.inc/",
+      description:
+        "Alma is an AI-native computer interface for macOS. It uses computer use to operate the apps already on your Mac, driven by natural language and voice, with every action visible and interruptible.",
+      featureList: [
+        "Computer use: Alma clicks, types and navigates real desktop apps",
+        "Voice-driven computer use and real-time dictation with generative edits",
+        "Context awareness across open windows, files, tabs and recent work",
+        "Works across existing software with no integrations or rebuilds",
+        "Visible, step-by-step actions that can be stopped or corrected mid-task",
+      ],
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/PreOrder",
+      },
+      publisher: { "@id": ORG },
+    }
+  );
+}
+
+// The page itself.
+if (page === "demos") {
+  graph.push({
+    "@type": "CollectionPage",
+    "@id": `${here.url}#page`,
+    url: here.url,
+    name: here.name,
+    isPartOf: { "@id": SITE },
+    about: { "@id": "https://alma.inc/#app" },
+    inLanguage: "en",
+    hasPart: [{ "@id": `${PAGES.blender.url}#video` }, { "@id": `${PAGES.paint.url}#video` }],
+  });
+} else if (page === "manifesto") {
+  graph.push({
+    "@type": "Article",
+    "@id": `${here.url}#page`,
+    url: here.url,
+    headline: "The computer should meet you where the work is.",
+    name: here.name,
+    isPartOf: { "@id": SITE },
+    inLanguage: "en",
+    author: { "@id": ORG },
+    publisher: { "@id": ORG },
+    datePublished: "2026-09-09",
+  });
+} else if (page !== "welcome") {
+  graph.push({
+    "@type": "WebPage",
+    "@id": `${here.url}#page`,
+    url: here.url,
+    name: here.name,
+    isPartOf: { "@id": SITE },
+    about: { "@id": "https://alma.inc/#app" },
+    inLanguage: "en",
+    ...(page === "blender" || page === "paint" ? { mainEntity: { "@id": `${here.url}#video` } } : {}),
+  });
+}
+
+// A video belongs to the page that shows it.
+if (page === "blender" || page === "paint") graph.push(video(page));
+if (page === "demos") graph.push(video("blender"), video("paint"));
+
+// Breadcrumbs, so the SERP shows the path rather than a bare URL.
+if (here.crumb) {
+  const trail = [{ name: "Alma", item: "https://alma.inc/" }];
+  if (page === "blender" || page === "paint") trail.push({ name: "Demos", item: PAGES.demos.url });
+  trail.push({ name: here.crumb, item: here.url });
+  graph.push({
+    "@type": "BreadcrumbList",
+    "@id": `${here.url}#breadcrumb`,
+    itemListElement: trail.map((step, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: step.name,
+      item: step.item,
+    })),
+  });
+}
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}
+/>

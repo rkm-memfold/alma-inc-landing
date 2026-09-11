@@ -32,10 +32,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
       - name: Build pages through the shared layout
-        # Not .build: upload-artifact ignores hidden paths by default.
-        run: python3 scripts/build_site.py --output "$RUNNER_TEMP/site"
+        run: npx astro build
         env:
+          # Not .build: upload-artifact ignores hidden paths by default.
+          ASTRO_OUT_DIR: ${{ runner.temp }}/site
           # PRs do not deploy and may originate from forks, where secrets are
           # intentionally unavailable. Their build only needs a valid sentinel.
           POSTHOG_PROJECT_TOKEN: ${{ github.event_name == 'pull_request' && 'phc_test' || secrets.POSTHOG_PROJECT_TOKEN }}

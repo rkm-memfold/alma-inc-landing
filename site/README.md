@@ -1,28 +1,84 @@
 # Site pages
 
-Every public HTML page is built through `site/layout.html`. The layout owns the
-Google Tag Manager snippets, so page source files must not copy GTM themselves.
+The site is built with [Astro](https://astro.build). Every public page is a
+`.astro` file under `site/pages/`, and every page renders through
+`site/layouts/Base.astro`, which owns the Google Tag Manager and PostHog
+snippets. Pages must not include either themselves; the build fails if they do.
 
-Add a route by creating a complete HTML document below `site/pages/`. The path
-is preserved in the generated site. For example, `site/pages/dictation/index.html`
-becomes `/dictation/` and automatically receives GTM in `<head>` and immediately
-after `<body>`.
+Add a route by adding a page below `site/pages/`. The path becomes the URL, so
+`site/pages/dictation/index.astro` is served at `/dictation/`.
 
-Build locally with:
+Every application on the desktop is a real page:
+
+| URL | Window |
+| --- | --- |
+| `/` | Alma, the welcome window and the waitlist |
+| `/demos/` | the Demos folder |
+| `/demos/blender/` | the Blender recording |
+| `/demos/paint/` | the Paint recording |
+| `/manifesto/` | the manifesto |
+| `/join-us/` | hiring |
+| `/socials/` | the Socials folder |
+| `/privacy/`, `/terms/` | the legal documents, standalone pages |
+
+They all render `site/components/Desktop.astro` with a different `open` prop.
+Opening a window from the desktop swaps the URL with `pushState` rather than
+reloading, and Back and Forward walk the same routes.
+
+**A page ships only its own window's body.** The others live in
+`site/content/windows.mjs`, are emitted as fragments at `/windows/<id>.html`,
+and are fetched on idle so switching is instant. That is what keeps each URL a
+distinct document instead of nine copies of the same text, and it is why
+`robots.txt` disallows `/windows/`: the content is already indexed on its own
+page.
 
 ```sh
-python3 scripts/build_site.py
+npm ci            # once
+npm run dev       # live reload on http://localhost:4321
+npm run build     # writes .build/
+```
+
+`npm run dev` serves pages only, so the waitlist form reports a failure there,
+exactly as it would against any static server. To exercise the form, build and
+use the preview server, which answers `POST /waitlist` the way nginx and Django
+do in production (it validates the address, logs it, and stores nothing):
+
+```sh
+npm run build
+python3 scripts/preview.py       # http://127.0.0.1:8899
+```
+
+The build needs a PostHog project token, from `POSTHOG_PROJECT_TOKEN` or, on the
+VM, `/etc/alma-posthog-project-token`:
+
+```sh
+POSTHOG_PROJECT_TOKEN=phc_local npm run build
 ```
 
 The generated `.build/` directory is disposable and is not committed.
+
+### What the build enforces
+
+`astro.config.mjs` registers a build step that reads every emitted page and
+fails if any of them carries other than exactly two GTM references, exactly one
+PostHog project token, or other than one `posthog.init` call. That is the same
+guarantee the previous Python build made: analytics lives in the layout and
+nowhere else.
+
+### The markup is hand-written
+
+Every `<script>` and `<style>` in these pages is marked `is:inline`, so Astro
+emits them byte for byte instead of bundling the JavaScript or scoping the CSS.
+The page is vanilla JS and global CSS on purpose. Keep `is:inline` on anything
+you add, or the desktop will quietly stop working.
 
 ## The legal documents
 
 `/terms` and `/privacy` are written as Markdown in `site/legal/` and rendered
 into pages by `scripts/render_legal.py`. The generated
-`site/pages/terms/index.html` and `site/pages/privacy/index.html` are committed
-like any other page, so the build and the deploy are unchanged — nothing on the
-VM needs to know about Markdown.
+`site/pages/terms/index.astro` and `site/pages/privacy/index.astro` are
+committed like any other page, so the build and the deploy are unchanged and
+nothing on the VM needs to know about Markdown.
 
 After editing a document, re-render and commit both:
 
@@ -33,3 +89,86 @@ python3 scripts/render_legal.py
 They are the copies Alma links to from its sign-in gate, so the URLs
 `https://alma.inc/terms/` and `https://alma.inc/privacy/` are a contract with
 released builds of the app: keep them, and redirect if they ever move.
+
+## The homepage is a Mac
+
+`site/pages/index.html` renders the landing page as a macOS desktop: menu bar,
+folders on the desktop, windows, and a dock. Clicking a folder hands the screen
+to an agent cursor, which closes whatever window is open and then opens the one
+you asked for, the same thing Alma does on a real machine.
+
+Everything the page needs lives in `public/page/desktop/`:
+
+| Path | What it is |
+| --- | --- |
+| `wallpaper.jpg` | Blur plate the SVG wallpaper samples, 878×494. Built from the Figma export by `scripts/build_wallpaper.py`; the geometry and the grain filter live in `site/components/Wallpaper.astro` |
+| `icons/*.png` | macOS system icons, exported at 256px from this Mac |
+| `icons/blender.svg` | The Blender Foundation's logo |
+| `icons/paint.svg`, `icons/joinus.svg` | Drawn for this page |
+| `demos/<name>.mp4` | The recording a window plays on a wide screen |
+| `demos/<name>-sm.mp4` | The 640×360 copy phones get instead |
+| `demos/<name>-poster.jpg` | The still shown before it plays, and the Gallery tile |
+
+`sitemap.xml` is generated by `site/pages/sitemap.xml.js` rather than kept in
+`public/`, so `lastmod` comes from each page's last commit instead of a date
+that silently goes stale. `site/components/Schema.astro` builds the JSON-LD:
+Organization, WebSite and SoftwareApplication are declared once on the homepage
+and referenced by `@id` from every other page.
+
+
+The window contents are all in the DOM at load, hidden, not injected, so the
+manifesto, the hiring page and the team page are crawlable and readable with
+JavaScript off. `/privacy` and `/terms` are fetched at runtime from their own
+pages, so the legal text has exactly one source.
+
+Deep links work: `/#manifesto`, `/#demos`, `/#joinus`, and so on.
+
+### The computer-use bits
+
+- **Ask Alma** (`⌘K`, the menu bar magnifier, or right-click the desktop) is a
+  Spotlight-shaped prompt bar. It matches plain language against a small
+  catalogue in the page script, "build me a rocket in blender" finds the
+  Blender demo, "i want a job" finds Join Us, anything it cannot place falls
+  through to the waitlist. Add a destination by adding a row to `CATALOGUE`.
+- **The idle glimpse** runs once, nine seconds after a cold load, if nobody has
+  touched anything: the agent cursor closes the open window, opens Ask Alma,
+  types a request, picks the result, and opens the demo. Any input cancels it,
+  and it never fires for a deep link or under `prefers-reduced-motion`.
+- The recording stays paused behind its poster during the glimpse, so a visitor
+  who never asked for it is never charged several megabytes.
+- Clicking the Alma icon (dock or desktop) raises a "coming soon" alert that
+  routes to the waitlist.
+
+### Weight
+
+First load is about **250 KB on a laptop and 140 KB on a phone**, in 19 and 12
+requests. Nothing about the demos, video or poster, is fetched until a demo
+window is opened, and the dock tiles that phones hide are lazy so they are
+never requested there. Icons are 192px PNGs quantised to a 255-colour palette,
+which is where most of the saving came from.
+
+### Adding a demo recording
+
+A raw screen recording is far too heavy to serve. `scripts/prepare_demo.py`
+trims and re-encodes one with `avconvert`, which ships with macOS:
+
+```sh
+python3 scripts/prepare_demo.py blender ~/Desktop/rocket.mov --start 12 --duration 48
+```
+
+It writes `blender.mp4`, the phone-sized `blender-sm.mp4`, and a poster beside
+them. Aim for under about 12 MB on the large one. If a recording is missing or
+fails, the window shows a note and a link out instead of a broken player.
+
+The two demos currently on the page were published on X, Paint by
+[@tiramisurabhi](https://x.com/tiramisurabhi/status/2092165148140360064) and
+Blender by [@rahulxkm](https://x.com/rahulxkm/status/2096182164501188886), and
+are committed as they were served, already H.264 and fast-start, so they were
+not re-encoded.
+
+### Icon licensing
+
+The PNGs under `icons/` are Apple's own artwork, exported from a Mac so the
+desktop reads as the real thing. That is a deliberate choice about fidelity,
+not an oversight; swap them for original drawings if it ever needs to be
+defensible.

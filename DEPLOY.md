@@ -1,8 +1,13 @@
 # Deployment
 
-The site is served by nginx from a single Azure VM. Pages are static HTML built
-through `site/layout.html`, which installs GTM once for every current and future
-page. Public assets live in `public/`.
+The site is served by nginx from a single Azure VM. Pages are static HTML built by
+Astro from `site/pages/`, each rendered through `site/layouts/Base.astro`, which
+installs GTM once for every current and future page. Public assets live in
+`public/`.
+
+Building needs Node 20 or newer, on any machine that runs the build: your
+laptop for `./deploy.sh`, the GitHub Actions runner, and the VM for its own
+autodeploy.
 
 ## Infrastructure
 

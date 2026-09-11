@@ -33,14 +33,18 @@ fi
 # there is nothing to preserve, and a reset cannot fail on a diverged tree.
 git reset --hard --quiet origin/main
 
-# Mirrors deploy.sh: build every page through site/layout.html into a
+# Mirrors deploy.sh: build every page through site/layouts/Base.astro into a
 # disposable staging directory. Only generated pages and public/ can reach the
 # webroot, so docs, backend code, scripts, and templates are never served.
 # If the build fails, set -e aborts before rsync and the webroot is untouched.
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 
-python3 scripts/build_site.py --output "$STAGE"
+# Astro needs Node. `npm ci` is deterministic and reads package-lock.json, and
+# --omit=dev is deliberately NOT used here: astro itself is a devDependency.
+export npm_config_update_notifier=false
+npm ci --no-audit --no-fund --silent
+ASTRO_OUT_DIR="$STAGE" ./node_modules/.bin/astro build
 
 # Normalize permissions so nginx can read the tree.
 find "$STAGE" -type d -exec chmod 755 {} +

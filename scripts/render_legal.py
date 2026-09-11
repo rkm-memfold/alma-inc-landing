@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Render the Markdown in site/legal into pages under site/pages.
 
-The legal documents are written and reviewed as Markdown; the site is plain
-static HTML built through the shared layout (scripts/build_site.py). So they are
-rendered here, once, and the result is committed like any other page — the build
-and the deploy stay exactly what they were, and nothing on the VM has to learn
-about Markdown.
+The legal documents are written and reviewed as Markdown; the site is built by
+Astro from hand-written markup. So they are rendered here, once, into .astro
+pages that use the shared layout, and the result is committed like any other
+page. The build and the deploy stay exactly what they were, and nothing on the
+VM has to learn about Markdown.
 
 Run it after editing a document:
 
@@ -173,9 +173,12 @@ def render(markdown: str) -> tuple[str, str]:
     return title, "\n        ".join(out)
 
 
-PAGE = """<!DOCTYPE html>
-<html lang="en">
-  <head>
+PAGE = """---
+import Base from "../../layouts/Base.astro";
+---
+
+<Base lang="en">
+  <Fragment slot="head">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{description}">
@@ -196,13 +199,13 @@ PAGE = """<!DOCTYPE html>
     <meta property="og:image:alt" content="Alma, an AI-native computer interface">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="@thinkwithalma">
+    <meta name="twitter:site" content="@alma_inc">
     <meta name="twitter:title" content="{title} - Alma">
     <meta name="twitter:description" content="{description}">
     <meta name="twitter:image" content="{site}/og-alma-wordmark.png">
 
     <title>{title} - Alma</title>
-    <link rel="icon" href="/client-logomark-dark.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64">
     <link rel="apple-touch-icon" href="/client-logomark-dark.png">
 
     <script type="application/ld+json">
@@ -218,10 +221,10 @@ PAGE = """<!DOCTYPE html>
       }}
     </script>
 
-    <style>
+    <style is:inline>
       @font-face {{
         font-family: "Miranda Sans";
-        src: url("/page/fonts/miranda-400.ttf") format("truetype");
+        src: url("/page/fonts/miranda-400.woff2") format("woff2");
         font-style: normal;
         font-weight: 400;
         font-display: swap;
@@ -229,17 +232,9 @@ PAGE = """<!DOCTYPE html>
 
       @font-face {{
         font-family: "Miranda Sans";
-        src: url("/page/fonts/miranda-500.ttf") format("truetype");
+        src: url("/page/fonts/miranda-500.woff2") format("woff2");
         font-style: normal;
         font-weight: 500;
-        font-display: swap;
-      }}
-
-      @font-face {{
-        font-family: "Miranda Sans";
-        src: url("/page/fonts/miranda-700.ttf") format("truetype");
-        font-style: normal;
-        font-weight: 700;
         font-display: swap;
       }}
 
@@ -390,8 +385,8 @@ PAGE = """<!DOCTYPE html>
         color: var(--muted);
       }}
     </style>
-  </head>
-  <body>
+  </Fragment>
+
     <div class="document">
       <a class="brand" href="/" aria-label="Alma home">
         <img src="/client-logo-dark.svg" alt="Alma">
@@ -404,8 +399,7 @@ PAGE = """<!DOCTYPE html>
         <a href="{other_href}">{other_title}</a> &middot; <a href="/">alma.inc</a>
       </footer>
     </div>
-  </body>
-</html>
+</Base>
 """
 
 
@@ -425,7 +419,7 @@ def main() -> None:
             other_title=other_title,
             other_href=other_href,
         )
-        destination = PAGES / meta["path"].strip("/") / "index.html"
+        destination = PAGES / meta["path"].strip("/") / "index.astro"
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(page, encoding="utf-8")
         written.append(destination.relative_to(ROOT))
